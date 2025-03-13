@@ -1,0 +1,48 @@
+.header__title {
+    text-align: center;
+}
+
+.urna {
+    width: 940px;
+    height: 420px;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #DAD4C8;
+    border-radius: 10px;
+}
+
+.urna__screen {
+    width: 550px;
+    height: 320px;
+    background-color: #fff;
+    border: solid 1px #333;
+}
+
+.urna__keyboard {
+    width: 290px;
+    height: 320px;
+    background-color: #3F3B3A;
+}
+
+.urna__keyboard__numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+    align-items: center;
+}
+
+.urna__keyboard__number-button {
+    width: 45px;
+    height: 35px;
+    background-color: #000;
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 3px 3px 0 #444;
+    text-align: center;
+}
+
+.number-button__zero {
+    grid-column: 2;
+}
