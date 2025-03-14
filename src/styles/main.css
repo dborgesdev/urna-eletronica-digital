@@ -1,3 +1,8 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+}
+
 .header__title {
     text-align: center;
 }
@@ -17,7 +22,49 @@
     width: 550px;
     height: 320px;
     background-color: #fff;
+    color: #333;
     border: solid 1px #333;
+}
+
+.urna__screen__header {
+    width: inherit;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+}
+
+.screen__header-left {
+    flex: 1;
+}
+
+.screen__header-center {
+    flex: 1;
+    color: #acacac;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.screen__header-right {
+    flex: 1;
+    text-align: right;
+}
+
+.screen__header-right img {
+    height: 20px;
+}
+
+.urna__screen__main {
+    width: inherit;
+    padding: 5px;
+}
+
+.screen__office {
+    width: 400px;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    text-align: center;
 }
 
 .urna__keyboard {
@@ -27,22 +74,71 @@
 }
 
 .urna__keyboard__numbers {
+    width: 100%;
+    height: 240px;
+    margin-top: 10px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 80px);
     justify-items: center;
+    justify-content: center;
     align-items: center;
 }
 
 .urna__keyboard__number-button {
-    width: 45px;
-    height: 35px;
-    background-color: #000;
+    width: 55px;
+    height: 40px;
+    background-color: #373332;
     color: #fff;
     border-radius: 5px;
-    box-shadow: 3px 3px 0 #444;
+    box-shadow: 2px -2px 3px #000;
+    font-size: 24px;
     text-align: center;
+    line-height: 40px;
 }
 
 .number-button__zero {
     grid-column: 2;
+}
+
+.urna__keyboard__actions {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+.urna__keyboard__blank {
+    width: 75px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 2px -2px 3px #9FA09B;
+    line-height: 20px;
+    text-align: center;
+}
+
+.urna__keyboard__correct {
+    width: 75px;
+    height: 40px;
+    background-color: #F5974F;
+    border-radius: 5px;
+    box-shadow: 2px -2px 3px #9F4417;
+    line-height: 20px;
+    text-align: center;
+}
+
+.urna__keyboard__confirm {
+    width: 75px;
+    height: 40px;
+    margin-bottom: 5px;
+    background-color: #40C373;
+    border-radius: 5px;
+    box-shadow: 2px -2px 3px #20934E;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    transform: scaleY(1.25);
 }
