@@ -13,77 +13,73 @@
     </header>
     <main>
         <div class="urna">
-            <div class="urna__display">
+            <div id="urna-display" class="urna__display">
                 <div class="urna__display__header">
-                    <div id="header-left" class="display__header-left">SEU VOTO PARA</div>
+                    <div id="header-left" class="display__header-left"> </div>
                     <div class="display__header-center">SIMULAÇÃO</div>
                     <div class="display__header-right"><img src="./src/assets/icon/bateria.jpg" alt="Bateria" /></div>
                 </div>
                 <div class="urna__display__main">
-                    <div id="display-main-msg" class="display__main__message"><p>INICIO DA VOTAÇÃO</p><p>IDENTIFIQUE O ELEITOR</p></div>
-                    <div id="display-office" class="urna__display__office">Senadora</div>
-                    <div id="rw1" class="display__main__row">
-                        <div id="number-label" class="display__label">Número: </div>
-                        <div class="display__data">
-                            <div class="display__number__input blink">9</div>
-                            <div class="display__number__input">1</div>
-                            <div class="display__number__input">1</div>
-                        </div>
+                    <div id="display-main-msg" class="display__main__message display-none"> </div>
+                    <div id="display-office" class="urna__display__office hide"> </div>
+                    <div class="display__main__row">
+                        <div id="number-label" class="display__label hide">Número: </div>
+                        <div id="number-box" class="display__data"> </div>
                     </div>
-                    <div id="rw2" class="display__main__row">
-                        <div id="rw2-alert" class="display__row__alert">NÚMERO ERRADO</div>
+                    <div id="rw2" class="display__main__row hide">
+                        <div id="rw2-alert" class="display__row__alert display-none">NÚMERO ERRADO</div>
                         <div class="display__label">Nome: </div>
-                        <div id="holder-display-name" class="display__data">Natação</div>
+                        <div id="holder-display-name" class="display__data"> </div>
                     </div>
-                    <div id="rw3" class="display__main__row">
+                    <div id="rw3" class="display__main__row hide">
                         <div class="display__label">Partido: </div>
-                        <div id="party" class="display__data">PEsp</div>
+                        <div id="party-initials" class="display__data"> </div>
                     </div>
-                    <div id="rw4" class="display__main__row">
+                    <div id="rw4" class="display__main__row hide">
                         <div id="vice1-display-label" class="display__label">1º Suplente: </div>
-                        <div id="vice1-name" class="display__data">Esgrima</div>
+                        <div id="vice1-name" class="display__data"> </div>
                     </div>
-                    <div id="rw5" class="display__main__row">
+                    <div id="rw5" class="display__main__row hide">
                         <div class="display__label">2º Suplente: </div>
-                        <div id="vice2-name" class="display__data">Rúgbi</div>
+                        <div id="vice2-name" class="display__data"> </div>
                     </div>
-                    <div id="display-alert" class="urna__display__alert blink">VOTO NULO</div>
+                    <div id="display-alert" class="urna__display__alert blink hide">VOTO NULO</div>
                 </div>
-                <div class="urna__display__footer">
-                    <div class="display__footer__alert"><span id="footer-alert" class="blink">CONFIRA SEU VOTO</span></div>
-                    Aperte a tecla:
+                <div id="display-footer" class="urna__display__footer display__footer--no-border hide">
+                    <div id="footer-alert" class="display__footer__alert display-none"><span class="blink">CONFIRA SEU VOTO</span></div>
+                    <span id="display-footer-l1" class="display__footer__l1">Aperte a tecla:</span>
                     <span id="display-footer-l2" class="display__footer__l2">CONFIRMA para CONFIRMAR este voto</span>
-                    <span class="display__footer__l3">CORRIGE para REINICIAR este voto</span>
+                    <span id="display-footer-l3" class="display__footer__l3">CORRIGE para REINICIAR este voto</span>
                 </div>
-                <div id="display-photos" class="urna__display__photos">
+                <div id="display-photos" class="urna__display__photos display-none">
                     <div class="urna__display__photo-box">
-                        <img id="holder-img" class="holder__photo" src="./src/assets/senador/911.jpg" alt="" />
-                        <span id="holder-photo-label" class="holder__label">Senadora</span>
+                        <img id="holder-img" class="holder__photo" src=" " alt="" />
+                        <span id="holder-photo-label" class="holder__label"> </span>
                     </div>
-                    <div id="display-vices-photo" class="urna__display__vice-photo">
+                    <div id="display-vices-photo" class="urna__display__vice-photo display-none">
                         <div class="urna__display__photo-box">
-                            <img id="vice1-img" class="vice__photo" src="./src/assets/senador/911-1.jpg" alt="" />
-                            <span id="vice1-photo-label" class="vice__label">1º Suplente</span>
+                            <img id="vice1-img" class="vice__photo" src=" " alt="" />
+                            <span id="vice1-photo-label" class="vice__label"> </span>
                         </div>
-                        <div id="vice2-photo-box" class="urna__display__photo-box">
-                            <img id="vice2-img" class="vice__photo" src="./src/assets/senador/911-2.jpg" alt="" />
-                            <span class="vice__label">2º Suplente</span>
+                        <div id="vice2-photo-box" class="urna__display__photo-box display-none">
+                            <img id="vice2-img" class="vice__photo" src=" " alt="" />
+                            <span id="vice2-photo-label" class="vice__label"> </span>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="urna__keyboard">
                 <div class="urna__keyboard__numbers">
-                    <div class="urna__keyboard__number-button" data-key:="1">1</div>
-                    <div class="urna__keyboard__number-button" data-key:="2">2</div>
-                    <div class="urna__keyboard__number-button" data-key:="3">3</div>
-                    <div class="urna__keyboard__number-button" data-key:="4">4</div>
-                    <div class="urna__keyboard__number-button" data-key:="5">5</div>
-                    <div class="urna__keyboard__number-button" data-key:="6">6</div>
-                    <div class="urna__keyboard__number-button" data-key:="7">7</div>
-                    <div class="urna__keyboard__number-button" data-key:="8">8</div>
-                    <div class="urna__keyboard__number-button" data-key:="9">9</div>
-                    <div class="urna__keyboard__number-button number-button__zero" data-key:="0">0</div>
+                    <div class="urna__keyboard__number-button" data-key="1">1</div>
+                    <div class="urna__keyboard__number-button" data-key="2">2</div>
+                    <div class="urna__keyboard__number-button" data-key="3">3</div>
+                    <div class="urna__keyboard__number-button" data-key="4">4</div>
+                    <div class="urna__keyboard__number-button" data-key="5">5</div>
+                    <div class="urna__keyboard__number-button" data-key="6">6</div>
+                    <div class="urna__keyboard__number-button" data-key="7">7</div>
+                    <div class="urna__keyboard__number-button" data-key="8">8</div>
+                    <div class="urna__keyboard__number-button" data-key="9">9</div>
+                    <div class="urna__keyboard__number-button number-button__zero" data-key="0">0</div>
                 </div>
                 <div class="urna__keyboard__actions">
                     <div id="blank-btn" class="urna__keyboard__blank">BRANCO</div>
@@ -93,5 +89,7 @@
             </div>
         </div>
     </main>
+    <script src="./src/scripts/gerais-primeiro-turno.js"></script>
+    <script src="./src/scripts/script.js"></script>
 </body>
 </html>
