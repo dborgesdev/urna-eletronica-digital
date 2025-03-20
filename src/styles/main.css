@@ -126,8 +126,12 @@ body {
     align-items: center;
 }
 
+.main__row--number {
+    height: 31px;
+}
+
 .display__label {
-    width: 90px;
+    min-width: 90px;
     font-size: 15px;
 }
 
@@ -308,7 +312,7 @@ body {
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 2px -2px 3px #9FA09B;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
@@ -320,7 +324,7 @@ body {
     background-color: #F5974F;
     border-radius: 5px;
     box-shadow: 2px -2px 3px #9F4417;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
@@ -328,15 +332,15 @@ body {
 
 .urna__keyboard__confirm {
     width: 75px;
-    height: 40px;
-    margin-bottom: 5px;
+    height: 35px;
+    margin-bottom: 9px;
     background-color: #40C373;
     border-radius: 5px;
     box-shadow: 2px -2px 3px #20934E;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 20px;
     text-align: center;
-    transform: scaleY(1.25);
+    transform: scaleY(1.5);
     cursor: pointer;
 }
 
@@ -352,6 +356,7 @@ body {
 .footer__l3--status {
     margin-left: 0;
     background-color: #DBE2EF;
+    color: #333;
     text-align: center;
     line-height: 20px;
 }
@@ -364,4 +369,8 @@ body {
 .footer__alert--center {
     padding: 0;
     justify-content: center;
+}
+
+.number__input--disabled {
+    background-color: #ACACAC;
 }

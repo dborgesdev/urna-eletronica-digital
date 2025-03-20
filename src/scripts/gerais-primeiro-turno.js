@@ -4,6 +4,7 @@ geraisPrimeiroTurnoJSON = [
         "officeFemale": "Deputada Federal",
         "photoSrc": "./src/assets/deputadofederal/",
         "digits": 4,
+        "nominal": false,
         "vice1": false,
         "vice2": false,
         "parties": {
@@ -41,6 +42,7 @@ geraisPrimeiroTurnoJSON = [
         "officeFemale": "Deputada Estadual",
         "photoSrc": "./src/assets/deputadoestadual/",
         "digits": 5,
+        "nominal": false,
         "vice1": false,
         "vice2": false,
         "parties": {
@@ -73,6 +75,7 @@ geraisPrimeiroTurnoJSON = [
         "officeFemale": "Senadora",
         "photoSrc": "./src/assets/senador/",
         "digits": 3,
+        "nominal": true,
         "vice1": true,
         "vice2": true,
         "parties": {
@@ -83,16 +86,16 @@ geraisPrimeiroTurnoJSON = [
             "95": { "initials": "PFolc", "name": "Partido do Folclore" }
         },
         "candidates": {
-            "911": { "name": "Natação", "sex": "female", "vice1": [{ "role": "1° Suplente", "name": "Esgrima" }], "vice2": [{ "role": "2° Suplente", "name": "Rúgbi" }] },
-            "912": { "name": "Golfe", "sex": "male", "vice1": [{ "role": "1° Suplente", "name": "Polo Aquático" }], "vice2": [{ "role": "2° Suplente", "name": "Beisebol" }] },
-            "921": { "name": "Samba", "sex": "male", "vice1": [{ "role": "1° Suplente", "name": "Tango" }], "vice2": [{ "role": "2° Suplente", "name": "Música" }] },
-            "922": { "name": "Mariachi", "sex": "male", "vice1": [{ "role": "1° Suplente", "name": "Salsa" }], "vice2": [{ "role": "2° Suplente", "name": "Heavy Metal" }] },
-            "931": { "name": "Enfermeira", "sex": "female", "vice1": [{ "role": "1° Suplente", "name": "Aeromoça" }], "vice2": [{ "role": "2° Suplente", "name": "Detetive" }] },
-            "932": { "name": "Fotógrafo", "sex": "male", "vice1": [{ "role": "1° Suplente", "name": "Gari" }], "vice2": [{ "role": "2° Suplente", "name": "Pintor" }] },
-            "941": { "name": "Festa Junina", "sex": "female", "vice1": [{ "role": "1° Suplente", "name": "Lavagem do Bonfim" }], "vice2": [{ "role": "2° Suplente", "name": "Dia das Bruxas" }] },
-            "942": { "name": "Cavalhadas", "sex": "female", "vice1": [{ "role": "1° Suplente", "name": "Festa do Milho" }], "vice2": [{ "role": "2° Suplente", "name": "Folia de Reis" }] },
-            "951": { "name": "Saci-Pererê", "sex": "male", "vice1": [{ "role": "1° Suplente", "name": "Caipora" }], "vice2": [{ "role": "2° Suplente", "name": "Mãe do Ouro" }] },
-            "952": { "name": "Cabra-Cabriola", "sex": "female", "vice1": [{ "role": "1° Suplente", "name": "Pisadeira" }], "vice2": [{ "role": "2° Suplente", "name": "Matintapereira" }] }
+            "911": { "name": "Natação", "sex": "female", "vice1": { "role": "1° Suplente", "name": "Esgrima" }, "vice2": { "role": "2° Suplente", "name": "Rúgbi" } },
+            "912": { "name": "Golfe", "sex": "male", "vice1": { "role": "1° Suplente", "name": "Polo Aquático" }, "vice2": { "role": "2° Suplente", "name": "Beisebol" } },
+            "921": { "name": "Samba", "sex": "male", "vice1": { "role": "1° Suplente", "name": "Tango" }, "vice2": { "role": "2° Suplente", "name": "Música" } },
+            "922": { "name": "Mariachi", "sex": "male", "vice1": { "role": "1° Suplente", "name": "Salsa" }, "vice2": { "role": "2° Suplente", "name": "Heavy Metal" } },
+            "931": { "name": "Enfermeira", "sex": "female", "vice1": { "role": "1° Suplente", "name": "Aeromoça" }, "vice2": { "role": "2° Suplente", "name": "Detetive" } },
+            "932": { "name": "Fotógrafo", "sex": "male", "vice1": { "role": "1° Suplente", "name": "Gari" }, "vice2": { "role": "2° Suplente", "name": "Pintor" } },
+            "941": { "name": "Festa Junina", "sex": "female", "vice1": { "role": "1° Suplente", "name": "Lavagem do Bonfim" }, "vice2": { "role": "2° Suplente", "name": "Dia das Bruxas" } },
+            "942": { "name": "Cavalhadas", "sex": "female", "vice1": { "role": "1° Suplente", "name": "Festa do Milho" }, "vice2": { "role": "2° Suplente", "name": "Folia de Reis" } },
+            "951": { "name": "Saci-Pererê", "sex": "male", "vice1": { "role": "1° Suplente", "name": "Caipora" }, "vice2": { "role": "2° Suplente", "name": "Mãe do Ouro" } },
+            "952": { "name": "Cabra-Cabriola", "sex": "female", "vice1": { "role": "1° Suplente", "name": "Pisadeira" }, "vice2": { "role": "2° Suplente", "name": "Matintapereira" } }
         }
     },
     {
@@ -100,6 +103,7 @@ geraisPrimeiroTurnoJSON = [
         "officeFemale": "Governadora",
         "photoSrc": "./src/assets/governador/",
         "digits": 2,
+        "nominal": true,
         "vice1": true,
         "vice2": false,
         "parties": {
@@ -110,11 +114,11 @@ geraisPrimeiroTurnoJSON = [
             "95": { "initials": "PFolc", "name": "Partido do Folclore" }
         },
         "candidates": {
-            "91": { "name": "Vôlei", "sex": "male", "vice1": [{ "role": "Vice-Governador", "name": "Tênis" }] },
-            "92": { "name": "Forró", "sex": "male", "vice1": [{ "role": "Vice-Governador", "name": "Pagode" }] },
-            "93": { "name": "Médica", "sex": "female", "vice1": [{ "role": "Vice-Governadora", "name": "Bibliotecária" }] },
-            "94": { "name": "Dia da Independência", "sex": "male", "vice1": [{ "role": "Vice-Governador", "name": "Natal" }] },
-            "95": { "name": "Boto Cor-de-rosa", "sex": "male", "vice1": [{ "role": "Vice-Governadora", "name": "Boitatá" }] }
+            "91": { "name": "Vôlei", "sex": "male", "vice1": { "role": "Vice-Governador", "name": "Tênis" } },
+            "92": { "name": "Forró", "sex": "male", "vice1": { "role": "Vice-Governador", "name": "Pagode" } },
+            "93": { "name": "Médica", "sex": "female", "vice1": { "role": "Vice-Governadora", "name": "Bibliotecária" } },
+            "94": { "name": "Dia da Independência", "sex": "male", "vice1": { "role": "Vice-Governador", "name": "Natal" } },
+            "95": { "name": "Boto Cor-de-rosa", "sex": "male", "vice1": { "role": "Vice-Governadora", "name": "Boitatá" } }
         }
     },
     {
@@ -122,6 +126,7 @@ geraisPrimeiroTurnoJSON = [
         "officeFemale": "Presidente",
         "photoSrc": "./src/assets/presidente/",
         "digits": 2,
+        "nominal": true,
         "vice1": true,
         "vice2": false,
         "parties": {
@@ -132,11 +137,11 @@ geraisPrimeiroTurnoJSON = [
             "95": { "initials": "PFolc", "name": "Partido do Folclore" }
         },
         "candidates": {
-            "91": { "name": "Futebol", "sex": "male", "vice1": [{ "role": "Vice-Presidente", "name": "Judô" }]},
-            "92": { "name": "Rock", "sex": "male", "vice1": [{ "role": "Vice-Presidente", "name": "MPB" }]},
-            "93": { "name": "Professora", "sex": "female", "vice1": [{ "role": "Vice-Presidente", "name": "Mágico" }]},
-            "94": { "name": "Copa do Mundo", "sex": "male", "vice1": [{ "role": "Vice-Presidente", "name": "Carnaval" }]},
-            "95": { "name": "Vitória=Régia", "sex": "female", "vice1": [{ "role": "Vice-Presidente", "name": "Curupira" }]}
+            "91": { "name": "Futebol", "sex": "male", "vice1": { "role": "Vice-Presidente", "name": "Judô" }},
+            "92": { "name": "Rock", "sex": "male", "vice1": { "role": "Vice-Presidente", "name": "MPB" }},
+            "93": { "name": "Professora", "sex": "female", "vice1": { "role": "Vice-Presidente", "name": "Mágico" }},
+            "94": { "name": "Copa do Mundo", "sex": "male", "vice1": { "role": "Vice-Presidente", "name": "Carnaval" }},
+            "95": { "name": "Vitória=Régia", "sex": "female", "vice1": { "role": "Vice-Presidente", "name": "Curupira" }}
         }
     }
 ]
