@@ -2,7 +2,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Deputado Federal",
         "officeFemale": "Deputada Federal",
-        "photoSrc": "./src/assets/deputadofederal/",
+        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/deputadofederal/",
         "digits": 4,
         "nominal": false,
         "vice1": false,
@@ -40,7 +40,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Deputado Estadual",
         "officeFemale": "Deputada Estadual",
-        "photoSrc": "./src/assets/deputadoestadual/",
+        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/deputadoestadual/",
         "digits": 5,
         "nominal": false,
         "vice1": false,
@@ -73,7 +73,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Senador",
         "officeFemale": "Senadora",
-        "photoSrc": "./src/assets/senador/",
+        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/senador/",
         "digits": 3,
         "nominal": true,
         "vice1": true,
@@ -101,7 +101,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Governador",
         "officeFemale": "Governadora",
-        "photoSrc": "./src/assets/governador/",
+        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/governador/",
         "digits": 2,
         "nominal": true,
         "vice1": true,
@@ -124,7 +124,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Presidente",
         "officeFemale": "Presidente",
-        "photoSrc": "./src/assets/presidente/",
+        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/presidente/",
         "digits": 2,
         "nominal": true,
         "vice1": true,
