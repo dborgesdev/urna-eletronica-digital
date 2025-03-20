@@ -71,7 +71,7 @@ async function init() {
     }, 1500);
 }
 
-async function getVotingData() {
+function getVotingData() {
     // Lógica para importar os dados da votação por API ou DB
     return new Promise((resolve, reject) => {
         try {
@@ -364,4 +364,3 @@ function setListeners() {
 
 /* START DA APLICAÇÃO */
 init()
-
