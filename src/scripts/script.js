@@ -1,4 +1,10 @@
 /* DEFINIÇÃO DE VARIÁVEIS DE INPUT*/
+const database = [
+    { type: 'Gerais', shift: '1°', local:'Brasil', dataSrc: geraisPrimeiroTurnoJSON },
+    // { type: 'Gerais', shift: '2°', local:'Brasil', dataSrc: geraisSegundoTurnoJSON },
+    // { type: 'Municipais', shift: '1°', local:'Cidade-UF', dataSrc: municipaisPrimeiroTurnoJSON },
+    // { type: 'Municipais', shift: '2°', local:'Cidade-UF', dataSrc: municipaisSegundoTurnoJSON }
+]
 const votingPlace = 'Municipio: 99999 - Minha Cidade &nbsp Zona: 9999 Seção: 9999';
 
 /* DEFINIÇÃO DE VARIÁVEIS DE TRABALHO */
@@ -15,23 +21,35 @@ const originalUrnaDisplay = getElId('urna-display').cloneNode(true);
 let elements;
 let displayManager;
 
+/* DEFINIÇÃO DE VARIÁVEIS DE SOM DA URNA */
+const sound = {
+    stage: new Audio('src/assets/sound/inter.mp3'),
+    end: new Audio('src/assets/sound/fim.mp3'),
+    error: new Audio('src/assets/sound/ops.mp3')
+};
+
 /* FUNÇÕES PRINCIPAIS */
-async function init() { 
+function welcome() { 
     getElements();
     setDisplayManager();
+    displayManager.modalAlert('start');
+    setModalListeners();
+}
+
+async function init(dataSrc) { 
     displayManager.screen('start');
-    votingData = await getVotingData();
+    votingData = await getVotingData(dataSrc);
     clearInterval(currentTime);
     votingStages(0);
     setUrnaListeners();
 }
 
-function getVotingData() {
+function getVotingData(dataSrc) {
     // Lógica para importar os dados da votação por API ou DB
     return new Promise((resolve, reject) => {
         try {
             setTimeout(() => {
-                resolve(geraisPrimeiroTurnoJSON);
+                resolve(dataSrc);
             }, 1500);
         } catch (error) {
             reject("Erro ao carregar os dados da votação!");
@@ -45,8 +63,12 @@ function votingStages(stage) {
         displayManager.stage(stage);
         setPartiesList();
     } else {
-        displayManager.screen('end');
         elements.list.div.classList.add('display-none');
+        displayManager.screen('saving');
+        setTimeout(() => {
+            displayManager.screen('end');
+
+        }, 1000);
     }
 }
 
@@ -239,6 +261,7 @@ function getElements() {
         modal: { 
             div: getElId('modal'),
             message: getElId('popup-message'),
+            election: getElId('select-election'),
             closer: getElId('modal-closer')
         },
         list: {
@@ -281,7 +304,7 @@ function setDisplayManager() {
                 elements.display.mainMessage.classList.add('blink');
                 displayManager.confirmVote();
                 displayManager.headFooter('stage');
-            } else if(type === 'start' || type === 'end'){ 
+            } else if(type === 'start' || type === 'end' || type === 'saving'){ 
                 switch(type) {
                     case 'start':
                         dspMsg = '<p>INICIO DA VOTAÇÃO</p><p>CARREGANDO DADOS...</p>';
@@ -289,10 +312,19 @@ function setDisplayManager() {
                     case 'end':
                         dspMsg = 'FIM';
                         resetDisplay();
+                        sound.end.play();
+                    break;
+                    case 'saving':
+                        dspMsg = `
+                        <div class="main__message__saving-bar"></div>
+                        <span class="message__saving-bar__label">GRAVANDO</span>
+                        `;
+                        resetDisplay();
                     break;
                 }
                 displayManager.headFooter('time');
             }
+
             elements.display.mainMessage.innerHTML = dspMsg;
             elements.display.mainMessage.classList.add(`main__message--${type}`);
             elements.display.mainMessage.classList.remove('display-none');
@@ -343,26 +375,45 @@ function setDisplayManager() {
         },
         modalAlert: (type) => {
             let modalMsg;
-            switch (type) {
-                case 'numbers':
-                    modalMsg = 'O número do candidato já está completo. Não é possível utilizar teclas numéricas neste momento';
-                break;
-                case 'blank':
-                    modalMsg = 'Para votar em <strong>BRANCO</strong> o campo de voto deve estar vazio.<br/>Aperte CORRIGE para apagar o campo de voto';
-                break;
-                case 'correct':
-                    modalMsg = 'Para utilizar o <strong>CORRIGE</strong> você deve ter digitado algum número ou ter votado em BRANCO';
-                break;
-                case 'confirm':
-                    if(votingData[currentStage].nominal) {
-                        modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar o número do candidato ou votar em BRANCO';
-                    } else {
-                        modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar pelo menos o número do partido ou votar em BRANCO';
-                    }
-                break;
+            if(type === 'start') {
+                let fragment = '';
+                modalMsg = '<strong>Para Iniciar:</strong> Selecione a Eleição que Deseja Simular';
+                database.forEach((value, index) => {
+                    fragment += `
+                    <div id="election-${index}" class="modal__election__card" data-key="${index}">
+                        <div class="card__election__type">ELEIÇÕES ${value.type.toUpperCase()}</div>
+                        <div class="card__election__shift">${value.shift} Turno</div>
+                    </div>
+                    `;
+                });
+                elements.modal.message.classList.add('pop-up__message--title');
+                elements.modal.election.classList.remove('display-none');
+                elements.modal.closer.classList.add('display-none');
+                elements.modal.election.innerHTML = fragment;
+            } else {
+                switch (type) {
+                    case 'numbers':
+                        modalMsg = 'O número do candidato já está completo. Não é possível utilizar teclas numéricas neste momento';
+                    break;
+                    case 'blank':
+                        modalMsg = 'Para votar em <strong>BRANCO</strong> o campo de voto deve estar vazio.<br/>Aperte CORRIGE para apagar o campo de voto';
+                    break;
+                    case 'correct':
+                        modalMsg = 'Para utilizar o <strong>CORRIGE</strong> você deve ter digitado algum número ou ter votado em BRANCO';
+                    break;
+                    case 'confirm':
+                        if(votingData[currentStage].nominal) {
+                            modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar o número do candidato ou votar em BRANCO';
+                        } else {
+                            modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar pelo menos o número do partido ou votar em BRANCO';
+                        }
+                    break;
+                }
+
+                sound.error.play();
             }
             elements.modal.message.innerHTML = modalMsg;
-            elements.modal.div.classList.remove('modal--hide');
+            elements.modal.div.classList.remove('display-none');
         }
     }
 }
@@ -411,7 +462,29 @@ function showCandidates(party, list) {
     elements.list.closer.classList.remove('display-none');
 }
 
-/* LISTENERS DOS BOTÕES DA URNA E MODAL */
+function closeWelcomeModal() {
+    elements.modal.div.classList.add('display-none')
+    elements.modal.message.classList.remove('pop-up__message--title');
+    elements.modal.election.classList.add('display-none');
+    elements.modal.closer.classList.remove('display-none');
+    elements.modal.election.innerHTML = '';
+}
+
+/* LISTENERS DO MODAL */
+function setModalListeners() {
+    document.querySelectorAll('.modal__election__card').forEach(button => {
+        button.addEventListener('click', () => {
+            const key = button.getAttribute('data-key');
+            const dataSrc = database[key].dataSrc;
+            init(dataSrc);
+            closeWelcomeModal();
+        });
+    });
+
+    elements.modal.closer.addEventListener('click', () => elements.modal.div.classList.add('display-none'));
+}
+
+/* LISTENERS DOS BOTÕES DA URNA */
 function setUrnaListeners() {
     elements.keyboard.numbers.forEach(button => {
         button.addEventListener('click', () => {
@@ -424,7 +497,7 @@ function setUrnaListeners() {
         });
     });
 
-    elements.keyboard.blank.addEventListener('click', () => {
+elements.keyboard.blank.addEventListener('click', () => {
         if(number.length === 0) {
             number = 'BRANCO';
             displayManager.screen('blank');
@@ -434,11 +507,15 @@ function setUrnaListeners() {
     });
 
     elements.keyboard.correct.addEventListener('click', () => {
-        if(number.length !== 0) {
-            resetDisplay();
-            votingStages(currentStage);
+        if(!confirmCooldown){
+            if(number.length !== 0) {
+                resetDisplay();
+                votingStages(currentStage);
+            } else {
+                displayManager.modalAlert('correct');
+            }
         } else {
-            displayManager.modalAlert('correct');
+            sound.error.play();
         }
     });
 
@@ -461,14 +538,15 @@ function setUrnaListeners() {
             } else if(number.length >= 2) {
                 resetDisplay();
                 currentStage++;
+                sound.stage.play();
                 votingStages(currentStage);
             } else {
                 displayManager.modalAlert('confirm');
             }
+        } else {
+            sound.error.play();
         }
     });
-
-    elements.modal.closer.addEventListener('click', () => elements.modal.div.classList.add('modal--hide'));
 }
 
 /* LISTENERS DA LISTA DE CANDIDATOS */
@@ -488,4 +566,4 @@ function setListListeners() {
 }
 
 /* START DA APLICAÇÃO */
-init()
+welcome();

@@ -145,3 +145,7 @@ geraisPrimeiroTurnoJSON = [
         }
     }
 ]
+
+geraisSegundoTurnoJSON = []
+municipaisPrimeiroTurnoJSON = []
+municipaisSegundoTurnoJSON = []

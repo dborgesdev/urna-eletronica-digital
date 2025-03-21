@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="./src/styles/main.css">
 </head>
 <body>
+    <!-- <div class="display__main__message main__message--saving zz">
+        <div class="main__message__saving-bar"></div>
+        <span class="message__saving-bar__label">GRAVANDO</span>
+    </div> -->
     <header>
         <h1 class="header__title">Simulador de Votação<br/>Eleições Gerais (Brasil)<br/>1° Turno</h1>
     </header>
@@ -96,13 +100,33 @@
             <div id="candidates-list-closer" class="candidates-list__closer">[ VOLTAR ]</div>
         </div>
     </section>
-    <div id="modal" class="modal modal--hide">
+    <div id="modal" class="modal">
         <div class="modal__pop-up">
             <div id="popup-message" class="modal__pop-up__message"> </div>
+            <div id="select-election" class="modal__select-election display-none">
+
+                <!-- <div id="election-0" class="modal__election__card" data-key="0">
+                    <div class="card__election__type">ELEIÇÕES GERAIS</div>
+                    <div class="card__election__shift">1° Turno</div>
+                </div>
+                <div id="election-1" class="modal__election__card" data-key="1">
+                    <div class="card__election__type">ELEIÇÕES GERAIS</div>
+                    <div class="card__election__shift">2° Turno</div>
+                </div>
+                <div id="election-2" class="modal__election__card" data-key="2">
+                    <div class="card__election__type">ELEIÇÕES MUNICIPAIS</div>
+                    <div class="card__election__shift">1° Turno</div>
+                </div>
+                <div id="election-3" class="modal__election__card" data-key="3">
+                    <div class="card__election__type">ELEIÇÕES MUNICIPAIS</div>
+                    <div class="card__election__shift">2° Turno</div>
+                </div> -->
+
+            </div>
             <div id="modal-closer" class="modal__closer">[ FECHAR ]</div>
         </div>
     </div>
-    <script src="./src/scripts/gerais-primeiro-turno.js"></script>
+    <script src="./src/scripts/candidates-db.js"></script>
     <script src="./src/scripts/script.js"></script>
 </body>
 </html>

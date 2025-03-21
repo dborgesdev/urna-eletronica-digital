@@ -1,8 +1,17 @@
+.zz {
+    z-index: 99;
+}
+
 /* ESTILOS GERAIS DA PÁGINA */
 @keyframes blink {
     0% { opacity: 0.2; }
     50% { opacity: 1; }
     100% { opacity: 0.2; }
+}
+
+@keyframes charging {
+    0% { width: 0%; }
+    100% { width: 100%; }
 }
 
 body {
@@ -111,6 +120,29 @@ body {
 .main__message--end {
     justify-content: end;
     font-size: 160px;
+}
+
+.main__message--saving {
+    padding: 0 10%;
+    padding-top: 10%;
+    font-weight: 600;
+    align-items: start;
+}
+
+.main__message__saving-bar {
+    width: 100%;
+    height: 15px;
+    background-color: green;
+    border: 1px solid #333;
+
+    animation-name: charging;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+
+.message__saving-bar__label {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .urna__display__office {
@@ -344,6 +376,7 @@ body {
     cursor: pointer;
 }
 
+/* ESTILOS DO MODAL / POP-UP */
 .modal {
     position: fixed;
     top: 0;
@@ -379,6 +412,12 @@ body {
     line-height: 30px;
 }
 
+.pop-up__message--title {
+    padding-bottom: 5px;
+    font-size: 22px;
+    border-bottom: 2px solid #fff;
+}
+
 .modal__closer {
     height: 30px;
     margin: auto;
@@ -386,6 +425,33 @@ body {
     font-weight: 600;
     line-height: 30px;
     cursor: pointer;
+}
+
+.modal__select-election {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+}
+
+.modal__election__card {
+    width: 130px;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal__election__card:hover {
+    color: blue;
+    cursor: pointer;
+}
+
+.card__election__type {
+    margin-bottom: 5px;
+}
+
+.card__election__shift {
+    text-align: center;
 }
 
 /* ESTILOS DA LISTA DE CANDIDATOS */
@@ -427,7 +493,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    
 }
 
 .list__card--link:hover {
@@ -451,7 +516,10 @@ body {
     max-height: 155px;
     object-fit: contain;
     border-radius: 5px;
+}
 
+.card__candidate__name {
+    text-align: center;
 }
 
 .candidates-list__closer {
