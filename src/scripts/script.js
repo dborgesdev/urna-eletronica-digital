@@ -18,12 +18,12 @@ let displayManager;
 /* FUNÇÕES PRINCIPAIS */
 async function init() { 
     getElements();
-    setListeners();
     setDisplayManager();
     displayManager.screen('start');
     votingData = await getVotingData();
     clearInterval(currentTime);
     votingStages(0);
+    setUrnaListeners();
 }
 
 function getVotingData() {
@@ -43,8 +43,10 @@ function votingStages(stage) {
     if (stage < votingData.length) {
         resetDisplay();
         displayManager.stage(stage);
+        setPartiesList();
     } else {
         displayManager.screen('end');
+        elements.list.div.classList.add('display-none');
     }
 }
 
@@ -97,7 +99,7 @@ function searchCandidate(number, hasParty) {
 
             elements.display.holderName.innerHTML = votingData[currentStage].candidates[number].name;
             elements.photos.holderImg.src = `${votingData[currentStage].photoSrc}${number}.jpg`;
-            elements.display.photosDiv.classList.remove('display-none');
+            elements.photos.div.classList.remove('display-none');
             searchVices();
 
         } else if(votingData[currentStage].nominal) {
@@ -139,7 +141,7 @@ function searchVices() {
         elements.photos.vice1Label.innerHTML = votingData[currentStage].candidates[number].vice1.role;
         elements.photos.vice1Img.src = `${votingData[currentStage].photoSrc}${number}-1.jpg`;
         elements.display.mainRw4.classList.remove('hide');
-        elements.display.vicesPhotosDiv.classList.remove('display-none');
+        elements.photos.vicesDiv.classList.remove('display-none');
     }
     if(votingData[currentStage].vice2) {
         elements.display.vice2Label.innerHTML = `${votingData[currentStage].candidates[number].vice2.role}: `;
@@ -147,7 +149,7 @@ function searchVices() {
         elements.photos.vice2Label.innerHTML = votingData[currentStage].candidates[number].vice2.role;
         elements.photos.vice2Img.src = `${votingData[currentStage].photoSrc}${number}-2.jpg`;
         elements.display.mainRw5.classList.remove('hide');
-        elements.display.vice2PhotosDiv.classList.remove('display-none');
+        elements.photos.vice2Div.classList.remove('display-none');
         elements.display.footerAlert.classList.remove('footer__alert--center');
     }
 }
@@ -215,16 +217,16 @@ function getElements() {
             footerAlert: getElId('footer-alert'),
             footerL1: getElId('display-footer-l1'),
             footerL2: getElId('display-footer-l2'),
-            footerL3: getElId('display-footer-l3'),
-            photosDiv: getElId('display-photos'),
-            vicesPhotosDiv: getElId('display-vices-photo'),
-            vice2PhotosDiv: getElId('vice2-photo-box'),
+            footerL3: getElId('display-footer-l3')  
         },
         photos: {
+            div: getElId('display-photos'),
             holderImg: getElId('holder-img'),
             holderLabel: getElId('holder-photo-label'),
+            vicesDiv: getElId('display-vices-photo'),
             vice1Img: getElId('vice1-img'),
             vice1Label: getElId('vice1-photo-label'),
+            vice2Div: getElId('vice2-photo-box'),
             vice2Img: getElId('vice2-img'),
             vice2Label: getElId('vice2-photo-label')
         },
@@ -238,6 +240,12 @@ function getElements() {
             div: getElId('modal'),
             message: getElId('popup-message'),
             closer: getElId('modal-closer')
+        },
+        list: {
+            div: getElId('candidates-list-div'),
+            head: getElId('candidates-list-head'),
+            body: getElId('candidates-list-body'),
+            closer: getElId('candidates-list-closer')
         }
     }
 }
@@ -359,8 +367,52 @@ function setDisplayManager() {
     }
 }
 
-/* LISTENERS DOS BOTÕES DA URNA */
-function setListeners() {
+function setPartiesList() {
+    let fragment = '';
+    elements.list.head.innerHTML = 'Para visualização dos candidatos, <strong>selecione um partido</strong>:';
+    Object.entries(votingData[currentStage].parties).forEach(([key, value]) => {
+        fragment += `
+            <div id="list-card-party-${key}" class="candidates-list__card list__card--link" data-key="${key}">
+                <div class="card__party__title">${key} ${value.initials}</div>
+                <div class="card__party__description">${value.name}</div>
+            </div>
+        `;
+    });
+    elements.list.body.innerHTML = fragment;
+    elements.list.closer.classList.add('display-none');
+    elements.list.div.classList.remove('display-none');
+    setListListeners();
+}
+
+function searchCandidates(prefix) {
+    const candidatesObj = votingData[currentStage].candidates;
+    const matchCandidatesObj = Object.keys(candidatesObj)
+        .filter(key => key.startsWith(prefix))
+        .reduce((acc, key) => {
+            acc[key] = { ...candidatesObj[key] };
+            return acc;
+        }, {});
+    return matchCandidatesObj;
+}
+
+function showCandidates(party, list) {
+    let fragment = '';
+    elements.list.head.innerHTML = `${party} ${votingData[currentStage].parties[party].initials} - ${votingData[currentStage].parties[party].name} - <strong>${votingData[currentStage].office}</strong>`;
+    Object.entries(list).forEach(([key, value]) => {
+        fragment += `
+            <div id="list-card-candidate-${key}" class="candidates-list__card">
+                <img id="card-candidate-photo-${key}" class="card__candidate__photo" src="${votingData[currentStage].photoSrc}/${key}.jpg" alt="${value.name}" />
+                <span id="card-candidate-name-${key}" class="card__candidate__name">${value.name}</span>
+                <span id="card-candidate-number-${key}" class="card__candidate__number">${key}</span>
+            </div>
+        `;
+    });
+    elements.list.body.innerHTML = fragment;
+    elements.list.closer.classList.remove('display-none');
+}
+
+/* LISTENERS DOS BOTÕES DA URNA E MODAL */
+function setUrnaListeners() {
     elements.keyboard.numbers.forEach(button => {
         button.addEventListener('click', () => {
             if(number.length < votingData[currentStage].digits) {
@@ -410,7 +462,6 @@ function setListeners() {
                 resetDisplay();
                 currentStage++;
                 votingStages(currentStage);
-                console.log('confirmado');
             } else {
                 displayManager.modalAlert('confirm');
             }
@@ -418,6 +469,22 @@ function setListeners() {
     });
 
     elements.modal.closer.addEventListener('click', () => elements.modal.div.classList.add('modal--hide'));
+}
+
+/* LISTENERS DA LISTA DE CANDIDATOS */
+function setListListeners() {
+    document.querySelectorAll('.list__card--link').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-key');
+            const matchCandidates = searchCandidates(key);
+            showCandidates(key, matchCandidates);
+        });
+    });
+
+    elements.list.closer.addEventListener('click', () => {
+        elements.list.closer.classList.add('display-none');
+        setPartiesList();
+    });
 }
 
 /* START DA APLICAÇÃO */
