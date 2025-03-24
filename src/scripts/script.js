@@ -1,23 +1,26 @@
 /* DEFINIÇÃO DE VARIÁVEIS DE INPUT*/
 const database = [
-    { type: 'Gerais', shift: '1°', local:'Brasil', dataSrc: geraisPrimeiroTurnoJSON },
-    // { type: 'Gerais', shift: '2°', local:'Brasil', dataSrc: geraisSegundoTurnoJSON },
-    // { type: 'Municipais', shift: '1°', local:'Cidade-UF', dataSrc: municipaisPrimeiroTurnoJSON },
-    // { type: 'Municipais', shift: '2°', local:'Cidade-UF', dataSrc: municipaisSegundoTurnoJSON }
+    { type: 'Eleições Gerais', shift: '1° Turno', local:'Brasil', dataSrc: geraisPrimeiroTurnoJSON },
+    { type: 'Eleições Gerais', shift: '2° Turno', local:'Brasil', dataSrc: geraisSegundoTurnoJSON },
+    { type: 'Eleições Municipais', shift: '1° Turno', local:'Cidade/UF', dataSrc: municipaisPrimeiroTurnoJSON },
+    { type: 'Eleições Municipais', shift: '2° Turno', local:'Cidade/UF', dataSrc: municipaisSegundoTurnoJSON }
 ]
 const votingPlace = 'Municipio: 99999 - Minha Cidade &nbsp Zona: 9999 Seção: 9999';
 
 /* DEFINIÇÃO DE VARIÁVEIS DE TRABALHO */
 let votingData;
 let currentTime;
-let currentStage = 0;
-let number = '';
-let hasParty = false;
-let confirmCooldown = false;
+const appState = {
+    currentStage: 0,
+    number: '',
+    confirmCooldown: false,
+    hasParty: false
+}
 
 /* DEFINIÇÃO DE VARIÁVEIS DOS ELEMENTOS DA PÁGINA */
 const getElId = (element) => document.getElementById(element);
 const originalUrnaDisplay = getElId('urna-display').cloneNode(true);
+const restartBtn = getElId('restart-button');
 let elements;
 let displayManager;
 
@@ -29,11 +32,12 @@ const sound = {
 };
 
 /* FUNÇÕES PRINCIPAIS */
-function welcome() { 
+function welcome() {
     getElements();
     setDisplayManager();
     displayManager.modalAlert('start');
     setModalListeners();
+    setUrnaListeners();
 }
 
 async function init(dataSrc) { 
@@ -41,24 +45,15 @@ async function init(dataSrc) {
     votingData = await getVotingData(dataSrc);
     clearInterval(currentTime);
     votingStages(0);
-    setUrnaListeners();
 }
 
 function getVotingData(dataSrc) {
     // Lógica para importar os dados da votação por API ou DB
-    return new Promise((resolve, reject) => {
-        try {
-            setTimeout(() => {
-                resolve(dataSrc);
-            }, 1500);
-        } catch (error) {
-            reject("Erro ao carregar os dados da votação!");
-        }
-    });
-}
+    return new Promise((resolve) => setTimeout(() => resolve(dataSrc), 1500));
+} 
 
 function votingStages(stage) {
-    if (stage < votingData.length) {
+    if(stage < votingData.length) {
         resetDisplay();
         displayManager.stage(stage);
         setPartiesList();
@@ -67,38 +62,40 @@ function votingStages(stage) {
         displayManager.screen('saving');
         setTimeout(() => {
             displayManager.screen('end');
-
+            displayManager.restartBtn(true)
         }, 1000);
     }
 }
 
 function registerNumber(key) {
-    if(number.length < votingData[currentStage].digits) {
-        number += key;
-        let currentNumberBox = getElId(`number-input-${number.length}`);
+    if(appState.number.length < votingData[appState.currentStage].digits) {
+        appState.number += key;
+        let currentNumberBox = getElId(`number-input-${appState.number.length}`);
         currentNumberBox.classList.remove('blink');
-        currentNumberBox.innerHTML = key;
-        if(number.length === 2) {
-            hasParty = searchParty(number);
+        updateUI(currentNumberBox, key);
+        if(appState.number.length === 2) {
+            appState.hasParty = searchParty(appState.number);
         }
-        if(number.length < votingData[currentStage].digits) {
-            let nextNumberBox = getElId(`number-input-${number.length + 1}`);
+        if(appState.number.length < votingData[appState.currentStage].digits) {
+            let nextNumberBox = getElId(`number-input-${appState.number.length + 1}`);
             nextNumberBox.classList.add('blink');
         } else {
-            searchCandidate(number, hasParty);
+            searchCandidate(appState.number);
         }
     }
 }
 
+/* FUNÇÕES DE BUSCA E DISPLAY DE DADOS */
+// Pesquisa de dados mostrados na tela da urna
 function searchParty(number) {
-    const party = votingData[currentStage].parties.hasOwnProperty(number);
-    if(votingData[currentStage].nominal) {
+    const party = votingData[appState.currentStage].parties.hasOwnProperty(number);
+    if(votingData[appState.currentStage].nominal) {
         if(party) {
-            elements.display.partyInitials.innerHTML = votingData[currentStage].parties[number].initials;
+            updateUI(elements.display.partyInitials, votingData[appState.currentStage].parties[number].initials);
         }
     } else {
         if(party) {
-            elements.display.partyInitials.innerHTML = votingData[currentStage].parties[number].initials;
+            updateUI(elements.display.partyInitials, votingData[appState.currentStage].parties[number].initials);
             elements.display.mainRw3.classList.remove('hide');
         } else {
             displayManager.screenAlert('wrongNumber');
@@ -109,22 +106,31 @@ function searchParty(number) {
     return party;
 }
 
-function searchCandidate(number, hasParty) {
-    const candidate = votingData[currentStage].candidates.hasOwnProperty(number);
-    if(hasParty) {
+function searchCandidate(number) {
+    const candidate = votingData[appState.currentStage].candidates.hasOwnProperty(number);
+    let genderOffice;
+
+    if(appState.hasParty) {
         if(candidate) {
-            checkCandidateSex();
-            if(votingData[currentStage].nominal) {
+            if(votingData[appState.currentStage].nominal) {
                 elements.display.mainRw3.classList.remove('hide');
                 displayManager.headFooter('stage');
             }
 
-            elements.display.holderName.innerHTML = votingData[currentStage].candidates[number].name;
-            elements.photos.holderImg.src = `${votingData[currentStage].photoSrc}${number}.jpg`;
-            elements.photos.div.classList.remove('display-none');
-            searchVices();
+            genderOffice = checkCandidateSex();
+            updateUI(elements.display.office, genderOffice);
+            elements.photos.holderImg.alt = genderOffice;
 
-        } else if(votingData[currentStage].nominal) {
+            updateUI(elements.display.holderName, votingData[appState.currentStage].candidates[number].name);
+            elements.photos.holderImg.src = `${votingData[appState.currentStage].photoSrc}${number}.jpg`;
+            elements.photos.div.classList.remove('display-none');
+            
+            if(votingData[appState.currentStage].vice1) {
+                searchVices();
+                updateUI(elements.photos.holderLabel, genderOffice);
+            }
+
+        } else if(votingData[appState.currentStage].nominal) {
             displayManager.screenAlert('wrongNumber');
             displayManager.headFooter('stage');
 
@@ -132,7 +138,7 @@ function searchCandidate(number, hasParty) {
             displayManager.screenAlert('nullCandidate');
         }
 
-    } else if(votingData[currentStage].nominal) {
+    } else if(votingData[appState.currentStage].nominal) {
         displayManager.screenAlert('wrongNumber');
         displayManager.headFooter('stage');
     }
@@ -142,80 +148,88 @@ function searchCandidate(number, hasParty) {
 }
 
 function checkCandidateSex() {
-    if(votingData[currentStage].candidates[number].sex === 'female') {
-        elements.display.office.innerHTML = votingData[currentStage].officeFemale;
-        elements.photos.holderImg.alt = votingData[currentStage].officeFemale;
-        if(votingData[currentStage].vice1) {
-            elements.photos.holderLabel.innerHTML = votingData[currentStage].officeFemale;
-        }
+    let genderOffice;
+    if(votingData[appState.currentStage].candidates[appState.number].sex === 'female') {
+        genderOffice = votingData[appState.currentStage].officeFemale;
     } else {
-        elements.photos.holderImg.alt = votingData[currentStage].office;
-        if(votingData[currentStage].vice1) {
-            elements.photos.holderLabel.innerHTML = votingData[currentStage].office;
-        }
+        genderOffice = votingData[appState.currentStage].office;
     }
+    return genderOffice;
 }
 
 function searchVices() {
-    if(votingData[currentStage].vice1) {
-        elements.display.vice1Label.innerHTML = `${votingData[currentStage].candidates[number].vice1.role}: `;
-        elements.display.vice1Name.innerHTML = votingData[currentStage].candidates[number].vice1.name;
-        elements.photos.vice1Label.innerHTML = votingData[currentStage].candidates[number].vice1.role;
-        elements.photos.vice1Img.src = `${votingData[currentStage].photoSrc}${number}-1.jpg`;
-        elements.display.mainRw4.classList.remove('hide');
+    updateViceInfo(votingData[appState.currentStage].candidates[appState.number].vice1, appState.number, 1);
+    if (votingData[appState.currentStage].vice2) updateViceInfo(votingData[appState.currentStage].candidates[appState.number].vice2, appState.number, 2);
+}
+
+function updateViceInfo(vice, number, index) {
+    updateUI(elements.display[`vice${index}Label`], `${vice.role}: `);
+    updateUI(elements.display[`vice${index}Name`], vice.name);
+    updateUI(elements.photos[`vice${index}Label`], vice.role);
+    updateUI(elements.photos[`vice${index}Img`].src = `${votingData[appState.currentStage].photoSrc}${number}-${index}.jpg`);
+    updateUI(elements.display[`mainRw${index+3}`].classList.remove('hide'));
+    if(index === 1) {
         elements.photos.vicesDiv.classList.remove('display-none');
-    }
-    if(votingData[currentStage].vice2) {
-        elements.display.vice2Label.innerHTML = `${votingData[currentStage].candidates[number].vice2.role}: `;
-        elements.display.vice2Name.innerHTML = votingData[currentStage].candidates[number].vice2.name;
-        elements.photos.vice2Label.innerHTML = votingData[currentStage].candidates[number].vice2.role;
-        elements.photos.vice2Img.src = `${votingData[currentStage].photoSrc}${number}-2.jpg`;
-        elements.display.mainRw5.classList.remove('hide');
+    } else {
         elements.photos.vice2Div.classList.remove('display-none');
         elements.display.footerAlert.classList.remove('footer__alert--center');
     }
 }
 
-/* FUNÇÕES AUXILIARES */
-function getDate() {
-    let fullDate = new Date();
-    let currentDay = fullDate.getDay();
-    currentDay = setLocalDay(currentDay);
-    let localDate = `${currentDay} ${fullDate.toLocaleDateString()} ${fullDate.toLocaleTimeString()}`;
-    elements.display.headerLeft.innerHTML = localDate;
+//Funções de busca de dados para exibição na cola de candidatos abaixo da urna
+function setPartiesList() {
+    let fragment = '';
+    elements.list.head.innerHTML = 'Para visualização dos candidatos, <strong>selecione um partido</strong>:';
+    Object.entries(votingData[appState.currentStage].parties).forEach(([key, value]) => {
+        fragment += `
+            <div class="candidates-list__card list__card--link" data-key="${key}">
+                <div class="card__party__title">${key} ${value.initials}</div>
+                <div class="card__party__description">${value.name}</div>
+            </div>
+        `;
+    });
+    elements.list.body.innerHTML = fragment;
+    elements.list.closer.classList.add('display-none');
+    elements.list.div.classList.remove('display-none');
+    setListListeners();
 }
 
-function setLocalDay(day) {
-    let dayInitials;
-    switch(day) {
-        case 0: 
-            dayInitials='DOM';
-        break;
-        case 1:
-            dayInitials='SEG';
-        break;
-        case 2:
-            dayInitials='TER';
-        break;
-        case 3:
-            dayInitials='QUA';
-        break;
-        case 4:
-            dayInitials='QUI';
-        break;
-        case 5:
-            dayInitials='SEX';
-        break;
-        case 6:
-            dayInitials='SÁB';
-        break;
-    }
-    return dayInitials;
+function searchCandidates(prefix) {
+    const candidatesObj = votingData[appState.currentStage].candidates;
+    const matchCandidatesObj = Object.keys(candidatesObj)
+        .filter(key => key.startsWith(prefix))
+        .reduce((acc, key) => {
+            acc[key] = { ...candidatesObj[key] };
+            return acc;
+        }, {});
+    return matchCandidatesObj;
 }
+
+function showCandidates(party, list) {
+    let fragment = '';
+    elements.list.head.innerHTML = `${party} ${votingData[appState.currentStage].parties[party].initials} - ${votingData[appState.currentStage].parties[party].name} - <strong>${votingData[appState.currentStage].office}</strong>`;
+    Object.entries(list).forEach(([key, value]) => {
+        fragment += `
+            <div id="list-card-candidate-${key}" class="candidates-list__card">
+                <img class="card__candidate__photo" src="${votingData[appState.currentStage].photoSrc}/${key}.jpg" alt="${value.name}" />
+                <span class="card__candidate__name">${value.name}</span>
+                <span class="card__candidate__number">${key}</span>
+            </div>
+        `;
+    });
+    elements.list.body.innerHTML = fragment;
+    elements.list.closer.classList.remove('display-none');
+}
+
 
 /* FUNÇÕES DE CONTROLE DE TELA */
+function updateUI(element, content) {
+    if (element) element.textContent = content;
+}
+
 function getElements() {
     elements = {
+        pageTitle: getElId('page-title'),
         urnaDisplay: getElId('urna-display'),
         display: {
             headerLeft: getElId('header-left'),
@@ -253,7 +267,7 @@ function getElements() {
             vice2Label: getElId('vice2-photo-label')
         },
         keyboard: {
-            numbers: document.querySelectorAll('.urna__keyboard__number-button'),
+            numbers: getElId('urna-keyboard-numbers'),
             blank: getElId('blank-btn'),
             correct: getElId('correct-btn'),
             confirm: getElId('confirm-btn')
@@ -274,24 +288,28 @@ function getElements() {
 }
 
 function resetDisplay() {
-    number = '';
+    appState.number = '';
     elements.urnaDisplay.replaceWith(originalUrnaDisplay.cloneNode(true));
     getElements();
 }
 
 function setDisplayManager() {
     displayManager = {
+        pageTitle: (text) => {
+            updateUI(elements.pageTitle, text);
+        },
         headFooter: (type) => {
             switch(type) {
                 case 'stage':
-                    elements.display.headerLeft.innerHTML = 'SEU VOTO PARA'
-                    elements.display.footer.classList.remove('display__footer--no-border');
-                    elements.display.footer.classList.remove('hide');
+                    updateUI(elements.display.headerLeft, 'SEU VOTO PARA');
+                    elements.display.footer.classList.toggle('display__footer--no-border');
+                    elements.display.footer.classList.toggle('hide');
                 break;
                 case 'time':
-                    currentTime = setInterval(getDate, 1000);
+                    if(currentTime) clearInterval(currentTime);
                     getDate();
-                    elements.display.footerL3.classList.add('footer__l3--status');
+                    currentTime = setInterval(getDate, 1000);
+                    elements.display.footerL3.classList.toggle('footer__l3--status');
                     elements.display.footerL3.innerHTML = votingPlace;
                 break;
             }
@@ -334,7 +352,7 @@ function setDisplayManager() {
             if(!votingData[stage].vice2) {
                 elements.display.mainRw5.classList.add('display-none');
             }
-            elements.display.office.innerHTML = votingData[stage].office;
+            updateUI(elements.display.office, votingData[stage].office);
             elements.display.office.classList.remove('hide');
             for(let i=0; i < votingData[stage].digits; i++) {
                 if(i === 0) {
@@ -347,16 +365,16 @@ function setDisplayManager() {
         },
         confirmVote: () => {
             elements.display.footerAlert.classList.remove('display-none');
-            confirmCooldown = true;
+            appState.confirmCooldown = true;
             setTimeout(() => {
                 elements.display.footerAlert.classList.add('display-none');
-                confirmCooldown = false;
+                appState.confirmCooldown = false;
             }, 1000);
         },
         screenAlert: (type) => {
             let numMsg;
             if(type === 'legendVote' || type === 'nullCandidate') {
-                elements.display.displayAlert.innerHTML = 'VOTO DE LEGENDA';
+                updateUI(elements.display.displayAlert, 'VOTO DE LEGENDA');
                 elements.display.displayAlert.classList.remove('hide');
                 if(type === 'nullCandidate') {
                     numMsg = 'CANDIDATO INEXISTENTE';
@@ -365,10 +383,10 @@ function setDisplayManager() {
             if(type === 'wrongNumber' || type === 'nullCandidate') {
                 if(type === 'wrongNumber') {
                     numMsg = 'NÚMERO ERRADO';
-                    elements.display.displayAlert.innerHTML = 'VOTO NULO';
+                    updateUI(elements.display.displayAlert, 'VOTO NULO');
                     elements.display.displayAlert.classList.remove('hide');
                 }
-                elements.display.rw2Alert.innerHTML = numMsg;
+                updateUI(elements.display.rw2Alert, numMsg);
                 elements.display.rw2Alert.classList.remove('display-none');
                 elements.display.mainRw2.classList.remove('hide');
             }
@@ -381,8 +399,8 @@ function setDisplayManager() {
                 database.forEach((value, index) => {
                     fragment += `
                     <div id="election-${index}" class="modal__election__card" data-key="${index}">
-                        <div class="card__election__type">ELEIÇÕES ${value.type.toUpperCase()}</div>
-                        <div class="card__election__shift">${value.shift} Turno</div>
+                        <div class="card__election__type">${value.type.toUpperCase()}</div>
+                        <div class="card__election__shift">${value.shift}</div>
                     </div>
                     `;
                 });
@@ -402,7 +420,7 @@ function setDisplayManager() {
                         modalMsg = 'Para utilizar o <strong>CORRIGE</strong> você deve ter digitado algum número ou ter votado em BRANCO';
                     break;
                     case 'confirm':
-                        if(votingData[currentStage].nominal) {
+                        if(votingData[appState.currentStage].nominal) {
                             modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar o número do candidato ou votar em BRANCO';
                         } else {
                             modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar pelo menos o número do partido ou votar em BRANCO';
@@ -414,52 +432,11 @@ function setDisplayManager() {
             }
             elements.modal.message.innerHTML = modalMsg;
             elements.modal.div.classList.remove('display-none');
+        },
+        restartBtn: (show) => {
+            restartBtn.classList.toggle('display-none', !show);
         }
     }
-}
-
-function setPartiesList() {
-    let fragment = '';
-    elements.list.head.innerHTML = 'Para visualização dos candidatos, <strong>selecione um partido</strong>:';
-    Object.entries(votingData[currentStage].parties).forEach(([key, value]) => {
-        fragment += `
-            <div id="list-card-party-${key}" class="candidates-list__card list__card--link" data-key="${key}">
-                <div class="card__party__title">${key} ${value.initials}</div>
-                <div class="card__party__description">${value.name}</div>
-            </div>
-        `;
-    });
-    elements.list.body.innerHTML = fragment;
-    elements.list.closer.classList.add('display-none');
-    elements.list.div.classList.remove('display-none');
-    setListListeners();
-}
-
-function searchCandidates(prefix) {
-    const candidatesObj = votingData[currentStage].candidates;
-    const matchCandidatesObj = Object.keys(candidatesObj)
-        .filter(key => key.startsWith(prefix))
-        .reduce((acc, key) => {
-            acc[key] = { ...candidatesObj[key] };
-            return acc;
-        }, {});
-    return matchCandidatesObj;
-}
-
-function showCandidates(party, list) {
-    let fragment = '';
-    elements.list.head.innerHTML = `${party} ${votingData[currentStage].parties[party].initials} - ${votingData[currentStage].parties[party].name} - <strong>${votingData[currentStage].office}</strong>`;
-    Object.entries(list).forEach(([key, value]) => {
-        fragment += `
-            <div id="list-card-candidate-${key}" class="candidates-list__card">
-                <img id="card-candidate-photo-${key}" class="card__candidate__photo" src="${votingData[currentStage].photoSrc}/${key}.jpg" alt="${value.name}" />
-                <span id="card-candidate-name-${key}" class="card__candidate__name">${value.name}</span>
-                <span id="card-candidate-number-${key}" class="card__candidate__number">${key}</span>
-            </div>
-        `;
-    });
-    elements.list.body.innerHTML = fragment;
-    elements.list.closer.classList.remove('display-none');
 }
 
 function closeWelcomeModal() {
@@ -470,12 +447,27 @@ function closeWelcomeModal() {
     elements.modal.election.innerHTML = '';
 }
 
+/* FUNÇÕES AUXILIARES */
+function getDate() {
+    let fullDate = new Date();
+    let currentDay = fullDate.getDay();
+    currentDay = setLocalDay(currentDay);
+    let localDate = `${currentDay} ${fullDate.toLocaleDateString()} ${fullDate.toLocaleTimeString()}`;
+    updateUI(elements.display.headerLeft, localDate);
+}
+
+function setLocalDay(day) {
+    const days = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
+    return days[day];
+}
+
 /* LISTENERS DO MODAL */
 function setModalListeners() {
     document.querySelectorAll('.modal__election__card').forEach(button => {
         button.addEventListener('click', () => {
             const key = button.getAttribute('data-key');
             const dataSrc = database[key].dataSrc;
+            displayManager.pageTitle(`${database[key].type} ${database[key].shift} - ${database[key].local}`);
             init(dataSrc);
             closeWelcomeModal();
         });
@@ -486,20 +478,15 @@ function setModalListeners() {
 
 /* LISTENERS DOS BOTÕES DA URNA */
 function setUrnaListeners() {
-    elements.keyboard.numbers.forEach(button => {
-        button.addEventListener('click', () => {
-            if(number.length < votingData[currentStage].digits) {
-                const key = button.getAttribute('data-key');
-                registerNumber(key);
-            } else {
-                displayManager.modalAlert('numbers');
-            }
-        });
+    elements.keyboard.numbers.addEventListener('click', (e) => {
+        if(e.target.classList.contains('urna__keyboard__number-button')) {
+            registerNumber(e.target.getAttribute('data-key'));
+        } 
     });
 
-elements.keyboard.blank.addEventListener('click', () => {
-        if(number.length === 0) {
-            number = 'BRANCO';
+    elements.keyboard.blank.addEventListener('click', () => {
+        if(appState.number.length === 0) {
+            appState.number = 'BRANCO';
             displayManager.screen('blank');
         } else {
             displayManager.modalAlert('blank');
@@ -507,39 +494,35 @@ elements.keyboard.blank.addEventListener('click', () => {
     });
 
     elements.keyboard.correct.addEventListener('click', () => {
-        if(!confirmCooldown){
-            if(number.length !== 0) {
-                resetDisplay();
-                votingStages(currentStage);
-            } else {
-                displayManager.modalAlert('correct');
-            }
+        if(appState.number.length !== 0) {
+            resetDisplay();
+            votingStages(appState.currentStage);
         } else {
-            sound.error.play();
+            displayManager.modalAlert('correct');
         }
     });
 
     elements.keyboard.confirm.addEventListener('click', () => {
-        if(!confirmCooldown) {
-            if(number.length >= 2 && number.length < votingData[currentStage].digits) {
-                if(!votingData[currentStage].nominal) {
-                    if(hasParty) {
+        if(!appState.confirmCooldown) {
+            if(appState.number.length >= 2 && appState.number.length < votingData[appState.currentStage].digits) {
+                if(!votingData[appState.currentStage].nominal) {
+                    if(appState.hasParty) {
                         displayManager.screenAlert('legendVote')
                     }
                     displayManager.confirmVote();
-                    for(let i = number.length + 1; i <= votingData[currentStage].digits; i++) {
-                        number += ' '
+                    for(let i = appState.number.length + 1; i <= votingData[appState.currentStage].digits; i++) {
+                        appState.number += ' '
                         getElId(`number-input-${i}`).classList.remove('blink');
                         getElId(`number-input-${i}`).classList.add('number__input--disabled');
                     }
                 } else {
                     displayManager.modalAlert('confirm');
                 }
-            } else if(number.length >= 2) {
+            } else if(appState.number.length >= 2) {
                 resetDisplay();
-                currentStage++;
+                appState.currentStage++;
                 sound.stage.play();
-                votingStages(currentStage);
+                votingStages(appState.currentStage);
             } else {
                 displayManager.modalAlert('confirm');
             }
@@ -551,12 +534,13 @@ elements.keyboard.blank.addEventListener('click', () => {
 
 /* LISTENERS DA LISTA DE CANDIDATOS */
 function setListListeners() {
-    document.querySelectorAll('.list__card--link').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const key = btn.getAttribute('data-key');
+    elements.list.body.addEventListener('click', (e) => {
+        const linkElement = e.target.closest('.list__card--link');
+        if(linkElement) {
+            const key = linkElement.getAttribute('data-key');
             const matchCandidates = searchCandidates(key);
             showCandidates(key, matchCandidates);
-        });
+        }
     });
 
     elements.list.closer.addEventListener('click', () => {
@@ -564,6 +548,16 @@ function setListListeners() {
         setPartiesList();
     });
 }
+
+/* LISTENERS ELEMENTOS DA PÁGINA */
+restartBtn.addEventListener('click', () => {
+    clearInterval(currentTime);
+    appState.currentStage = 0;
+    resetDisplay();
+    displayManager.restartBtn(false);
+    displayManager.modalAlert('start');
+    setModalListeners();
+});
 
 /* START DA APLICAÇÃO */
 welcome();

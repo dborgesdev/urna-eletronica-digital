@@ -2,7 +2,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Deputado Federal",
         "officeFemale": "Deputada Federal",
-        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/deputadofederal/",
+        "photoSrc": "./src/assets/eleicoes-gerais/deputadofederal/",
         "digits": 4,
         "nominal": false,
         "vice1": false,
@@ -40,7 +40,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Deputado Estadual",
         "officeFemale": "Deputada Estadual",
-        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/deputadoestadual/",
+        "photoSrc": "./src/assets/eleicoes-gerais/deputadoestadual/",
         "digits": 5,
         "nominal": false,
         "vice1": false,
@@ -73,7 +73,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Senador",
         "officeFemale": "Senadora",
-        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/senador/",
+        "photoSrc": "./src/assets/eleicoes-gerais/senador/",
         "digits": 3,
         "nominal": true,
         "vice1": true,
@@ -101,7 +101,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Governador",
         "officeFemale": "Governadora",
-        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/governador/",
+        "photoSrc": "./src/assets/eleicoes-gerais/governador/",
         "digits": 2,
         "nominal": true,
         "vice1": true,
@@ -124,7 +124,7 @@ geraisPrimeiroTurnoJSON = [
     {
         "office": "Presidente",
         "officeFemale": "Presidente",
-        "photoSrc": "./src/assets/eleicoes-gerais/primeiro-turno/presidente/",
+        "photoSrc": "./src/assets/eleicoes-gerais/presidente/",
         "digits": 2,
         "nominal": true,
         "vice1": true,
@@ -146,6 +146,118 @@ geraisPrimeiroTurnoJSON = [
     }
 ]
 
-geraisSegundoTurnoJSON = []
-municipaisPrimeiroTurnoJSON = []
-municipaisSegundoTurnoJSON = []
+geraisSegundoTurnoJSON = [
+    {
+        "office": "Governador",
+        "officeFemale": "Governadora",
+        "photoSrc": "./src/assets/eleicoes-gerais/governador/",
+        "digits": 2,
+        "nominal": true,
+        "vice1": true,
+        "vice2": false,
+        "parties": {
+            "91": { "initials": "PEsp", "name": "Partido dos Esportes" },
+            "94": { "initials": "PFest", "name": "Partido das Festas Populares" }
+        },
+        "candidates": {
+            "91": { "name": "Vôlei", "sex": "male", "vice1": { "role": "Vice-Governador", "name": "Tênis" } },
+            "94": { "name": "Dia da Independência", "sex": "male", "vice1": { "role": "Vice-Governador", "name": "Natal" } }
+        }
+    },
+    {
+        "office": "Presidente",
+        "officeFemale": "Presidente",
+        "photoSrc": "./src/assets/eleicoes-gerais/presidente/",
+        "digits": 2,
+        "nominal": true,
+        "vice1": true,
+        "vice2": false,
+        "parties": {
+            "91": { "initials": "PEsp", "name": "Partido dos Esportes" },
+            "92": { "initials": "PMus", "name": "Partido dos Ritmos Musicais" }
+        },
+        "candidates": {
+            "91": { "name": "Futebol", "sex": "male", "vice1": { "role": "Vice-Presidente", "name": "Judô" }},
+            "92": { "name": "Rock", "sex": "male", "vice1": { "role": "Vice-Presidente", "name": "MPB" }}
+        }
+    }
+]
+
+municipaisPrimeiroTurnoJSON = [
+    {
+        "office": "Vereador",
+        "officeFemale": "Vereadora",
+        "photoSrc": "./src/assets/eleicoes-municipais/vereador/",
+        "digits": 5,
+        "nominal": false,
+        "vice1": false,
+        "vice2": false,
+        "parties": {
+            "91": { "initials": "PEsp", "name": "Partido dos Esportes" },
+            "92": { "initials": "PMus", "name": "Partido dos Ritmos Musicais" },
+            "93": { "initials": "PProf", "name": "Partido das Profissões" },
+            "94": { "initials": "PFest", "name": "Partido das Festas Populares" },
+            "95": { "initials": "PFolc", "name": "Partido do Folclore" }
+        },
+        "candidates": {
+            "91001": { "name": "Golfe", "sex": "male" },
+            "91002": { "name": "Beisebol", "sex": "male" },
+            "91003": { "name": "Ginástica Artística", "sex": "female" },
+            "92001": { "name": "Rock", "sex": "male" },
+            "92002": { "name": "Sertanejo", "sex": "male" },
+            "92003": { "name": "MPB", "sex": "female" },
+            "93001": { "name": "Astronauta", "sex": "male" },
+            "93002": { "name": "Pintor", "sex": "male" },
+            "93003": { "name": "Enfermeira", "sex": "female" },
+            "94001": { "name": "Páscoa", "sex": "female" },
+            "94002": { "name": "Oktoberfest", "sex": "female" },
+            "94003": { "name": "Reveillon", "sex": "male" },
+            "95001": { "name": "Curupira", "sex": "male" },
+            "95002": { "name": "Cabra Cabriola", "sex": "female" },
+            "95003": { "name": "Cuca", "sex": "female" }
+        }
+    },
+    {
+        "office": "Prefeito",
+        "officeFemale": "Prefeita",
+        "photoSrc": "./src/assets/eleicoes-municipais/prefeito/",
+        "digits": 2,
+        "nominal": true,
+        "vice1": true,
+        "vice2": false,
+        "parties": {
+            "91": { "initials": "PEsp", "name": "Partido dos Esportes" },
+            "92": { "initials": "PMus", "name": "Partido dos Ritmos Musicais" },
+            "93": { "initials": "PProf", "name": "Partido das Profissões" },
+            "94": { "initials": "PFest", "name": "Partido das Festas Populares" },
+            "95": { "initials": "PFolc", "name": "Partido do Folclore" }
+        },
+        "candidates": {
+            "91": { "name": "Natação", "sex": "female", "vice1": { "role": "Vice-Prefeito", "name": "Judô" }},
+            "92": { "name": "Heavy Metal", "sex": "male", "vice1": { "role": "Vice-Prefeita", "name": "Salsa" }},
+            "93": { "name": "Bombeira", "sex": "female", "vice1": { "role": "Vice-Prefeito", "name": "Detetive" }},
+            "94": { "name": "Festa Junina", "sex": "female", "vice1": { "role": "Vice-Prefeita", "name": "Festa do Milho" }},
+            "95": { "name": "Boto Cor-de-Rosa", "sex": "male", "vice1": { "role": "Vice-Prefeita", "name": "Mãe do Ouro" }}
+        }
+    }
+]
+
+municipaisSegundoTurnoJSON = [
+    {
+        "office": "Prefeito",
+        "officeFemale": "Prefeita",
+        "photoSrc": "./src/assets/eleicoes-municipais/prefeito/",
+        "digits": 2,
+        "nominal": true,
+        "vice1": true,
+        "vice2": false,
+        "parties": {
+            "91": { "initials": "PEsp", "name": "Partido dos Esportes" },
+            "92": { "initials": "PMus", "name": "Partido dos Ritmos Musicais" }
+        },
+        "candidates": {
+            "91": { "name": "Natação", "sex": "female", "vice1": { "role": "Vice-Prefeito", "name": "Judô" }},
+            "92": { "name": "Heavy Metal", "sex": "male", "vice1": { "role": "Vice-Prefeita", "name": "Salsa" }},
+        }
+    }
+]

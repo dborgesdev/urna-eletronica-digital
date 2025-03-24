@@ -26,7 +26,9 @@ body {
 
 /* ESTILOS DO CABEÇALHO */
 .header__title {
+    margin: 40px;
     text-align: center;
+    line-height: 50px;
 }
 
 /* ESTILOS DA URNA ELETRÔNICA */
@@ -373,6 +375,27 @@ body {
     line-height: 20px;
     text-align: center;
     transform: scaleY(1.5);
+    cursor: pointer;
+}
+
+/* ESTILOS DO BOTÃO DE REINICIO */
+.restart-voting {
+    display: flex;
+    justify-content: center;
+}
+
+.restart__button {
+    padding: 10px 20px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #3399FF;
+    border: 1px solid #333;
+    border-radius: 5px;
+}
+
+.restart__button:hover {
+    background-color: blue;
     cursor: pointer;
 }
 
