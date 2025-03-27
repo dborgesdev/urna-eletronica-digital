@@ -1,19 +1,26 @@
 /* DEFINIÇÃO DE VARIÁVEIS DE INPUT*/
+//Tipos de eleição e origem de dados
 const database = [
     { type: 'Eleições Gerais', shift: '1° Turno', local:'Brasil', dataSrc: geraisPrimeiroTurnoJSON },
     { type: 'Eleições Gerais', shift: '2° Turno', local:'Brasil', dataSrc: geraisSegundoTurnoJSON },
     { type: 'Eleições Municipais', shift: '1° Turno', local:'Cidade/UF', dataSrc: municipaisPrimeiroTurnoJSON },
     { type: 'Eleições Municipais', shift: '2° Turno', local:'Cidade/UF', dataSrc: municipaisSegundoTurnoJSON }
 ]
-const votingPlace = {cityCode: '99999', cityName: 'Minha Cidade', zone: '9999', section: '9999' };
-const urnaInfo = { ueId: '12345678', voters: 99 }
+
+//Dados do local de votação e urna
+const votingPlace = {cityCode: '99999', cityName: 'Minha Cidade', zone: '9999', section: '9999', ueId: '12345678', voters: 99 };
 
 /* DEFINIÇÃO DE VARIÁVEIS DE TRABALHO */
+//Objetos com os dados da votação
 let votingData;
 let votingResults;
+
+//Variáveis para administrar data e hora
 let currentTime;
 let startDate;
 let endDate;
+
+//Variável para controlar o estado da aplicação
 const appState = {
     currentDb: {},
     currentStage: 0,
@@ -42,15 +49,24 @@ const appState = {
 }
 
 /* DEFINIÇÃO DE VARIÁVEIS DOS ELEMENTOS DA PÁGINA */
+//Função para facilitar a obtenção do ID do elemento no HTML
 const getElId = (element) => document.getElementById(element);
+
+//Clonar a tela original da urna para reestabeler a cada etapa
 const originalUrnaDisplay = getElId('urna-display').cloneNode(true);
+
+//Botões de controle ao final de cada votação
 const controlsBtn = getElId('control-buttons');
+
+//Captura dos elementos da tela
 let elements = getElements();
 
+//Controle de exibição dos elementos da página
 const displayManager = {
     pageTitle: (text) => {
         updateUI(elements.pageTitle, text);
     },
+
     headFooter: (type) => {
         switch(type) {
             case 'stage':
@@ -68,6 +84,7 @@ const displayManager = {
             break;
         }
     },
+
     screen: (type) => {
         let dspMsg;
         if(type === 'blank') {
@@ -101,6 +118,7 @@ const displayManager = {
         elements.display.mainMessage.classList.add(`main__message--${type}`);
         elements.display.mainMessage.classList.remove('display-none');
     },
+
     stage: (stage) => {
         let fragment = '';
         if(!votingData[stage].vice2) {
@@ -117,6 +135,7 @@ const displayManager = {
         }
         elements.display.numberBox.innerHTML = fragment;
     },
+
     confirmVote: () => {
         elements.display.footerAlert.classList.remove('display-none');
         appState.btnCooldown = true;
@@ -125,6 +144,7 @@ const displayManager = {
             appState.btnCooldown = false;
         }, 1000);
     },
+
     screenAlert: (type) => {
         let numMsg;
         if(type === 'legendVote' || type === 'nullCandidate') {
@@ -145,6 +165,7 @@ const displayManager = {
             elements.display.mainRw2.classList.remove('hide');
         }
     },
+
     modalAlert: (type) => {
         let modalMsg;
         if(type === 'start') {
@@ -188,9 +209,11 @@ const displayManager = {
         elements.modal.div.classList.remove('display-none');
         document.body.classList.add('no-scroll');
     },
+
     paperResults: (show) => {
         elements.paper.div.classList.toggle('display-none', !show);
     },
+
     controlsBtn: (show) => {
         controlsBtn.classList.toggle('display-none', !show);
     }
@@ -204,11 +227,7 @@ const sound = {
 };
 
 /* FUNÇÕES PRINCIPAIS */
-function welcome() {
-    displayManager.modalAlert('start');
-    setModalListeners();
-}
-
+//Inicialização da votação
 async function init(dataSrc) { 
     startDate = getDate();
     displayManager.screen('start');
@@ -219,11 +238,13 @@ async function init(dataSrc) {
     appState.btnCooldown = false;
 }
 
+//Recuperação dos dados da votação, partidos e candidatos
 function getVotingData(dataSrc) {
     // Lógica para importar os dados da votação por API ou DB
     return new Promise((resolve) => setTimeout(() => resolve(dataSrc), 1500));
 }
 
+//Definir armazenamento dos dados de votação para impressão do boletim de urna
 function initResults(data) {
     return data.map(item => {
         const newItem = {
@@ -254,6 +275,7 @@ function initResults(data) {
     });
 }
 
+//Controle das etapas de votação
 function votingStages(stage) {
     if(stage < votingData.length) {
         resetDisplay();
@@ -269,15 +291,18 @@ function votingStages(stage) {
     }
 }
 
+//Controle de campos do número do candidato na tela
 function registerNumber(key) {
     if(appState.number.length < votingData[appState.currentStage].digits) {
         appState.number += key;
         let currentNumberBox = getElId(`number-input-${appState.number.length}`);
         currentNumberBox.classList.remove('blink');
         updateUI(currentNumberBox, key);
+        
         if(appState.number.length === 2) {
             appState.hasParty = searchParty(appState.number);
         }
+        
         if(appState.number.length < votingData[appState.currentStage].digits) {
             let nextNumberBox = getElId(`number-input-${appState.number.length + 1}`);
             nextNumberBox.classList.add('blink');
@@ -287,13 +312,16 @@ function registerNumber(key) {
     }
 }
 
+//Validação do voto
 function handleConfirm() {
     if(appState.number.length < votingData[appState.currentStage].digits) {
         if(!votingData[appState.currentStage].nominal) {
             if(appState.hasParty) {
                 displayManager.screenAlert('legendVote')
             }
+            
             displayManager.confirmVote();
+            
             for(let i = appState.number.length + 1; i <= votingData[appState.currentStage].digits; i++) {
                 appState.number += ' '
                 getElId(`number-input-${i}`).classList.remove('blink');
@@ -311,6 +339,7 @@ function handleConfirm() {
     }
 }
 
+//Registro do voto
 function registerVote(number, stage) {
     number = number.trim();
     if(appState.hasParty) {
@@ -331,6 +360,7 @@ function registerVote(number, stage) {
     }
 }
 
+//Iniciar novo voto na mesma votação
 function newVoter() {
     appState.voters++;
     appState.reset('new');
@@ -339,6 +369,7 @@ function newVoter() {
     votingStages(0);
 }
 
+//Reiniciar votação
 function restartVoting() {
     clearInterval(currentTime);
     appState.reset('full');
@@ -348,10 +379,11 @@ function restartVoting() {
     setModalListeners();
 }
 
-/* FUNÇÕES DE BUSCA E DISPLAY DE DADOS */
-// Pesquisa de dados mostrados na tela da urna
+/* FUNÇÕES DE BUSCA E DISPLAY DE DADOS NA TELA DA URNA */
+//Busca do partido pelo número
 function searchParty(number) {
     const party = votingData[appState.currentStage].parties.hasOwnProperty(number);
+
     if(votingData[appState.currentStage].nominal) {
         if(party) {
             updateUI(elements.display.partyInitials, votingData[appState.currentStage].parties[number].initials);
@@ -363,12 +395,15 @@ function searchParty(number) {
         } else {
             displayManager.screenAlert('wrongNumber');
         }
+        
         elements.display.numberLabel.classList.remove('hide');
         displayManager.headFooter('stage');
     }
+
     return party;
 }
 
+//Busca do candidato pelo número
 function searchCandidate(number) {
     const candidate = votingData[appState.currentStage].candidates.hasOwnProperty(number);
     let genderOffice;
@@ -412,27 +447,34 @@ function searchCandidate(number) {
     return candidate;
 }
 
+//Verificar sexo do candidato e personalizar campos de gênero
 function checkCandidateSex() {
     let genderOffice;
+
     if(votingData[appState.currentStage].candidates[appState.number].sex === 'female') {
         genderOffice = votingData[appState.currentStage].officeFemale;
     } else {
         genderOffice = votingData[appState.currentStage].office;
     }
+
     return genderOffice;
 }
 
+//Procurar informações dos vices
 function searchVices() {
     updateViceInfo(votingData[appState.currentStage].candidates[appState.number].vice1, appState.number, 1);
+
     if (votingData[appState.currentStage].vice2) updateViceInfo(votingData[appState.currentStage].candidates[appState.number].vice2, appState.number, 2);
 }
 
+//Atualizar informações dos vices
 function updateViceInfo(vice, number, index) {
     updateUI(elements.display[`vice${index}Label`], `${vice.role}: `);
     updateUI(elements.display[`vice${index}Name`], vice.name);
     updateUI(elements.photos[`vice${index}Label`], vice.role);
     updateUI(elements.photos[`vice${index}Img`].src = `${votingData[appState.currentStage].photoSrc}${number}-${index}.jpg`);
     updateUI(elements.display[`mainRw${index+3}`].classList.remove('hide'));
+    
     if(index === 1) {
         elements.photos.vicesDiv.classList.remove('display-none');
     } else {
@@ -441,10 +483,12 @@ function updateViceInfo(vice, number, index) {
     }
 }
 
-//Funções de busca de dados para exibição na cola de candidatos abaixo da urna
+/* FUNÇÕES DE BUSCA E DISPLAY DE DADOS NA COLA ABAIXO DA URNA */
+//Busca por partidos participantes na etapa de votação
 function setPartiesList() {
     let fragment = '';
     elements.list.head.innerHTML = 'Para visualização dos candidatos, <strong>selecione um partido</strong>:';
+    
     Object.entries(votingData[appState.currentStage].parties).forEach(([key, value]) => {
         fragment += `
             <div class="candidates-list__card list__card--link" data-key="${key}">
@@ -453,12 +497,14 @@ function setPartiesList() {
             </div>
         `;
     });
+
     elements.list.body.innerHTML = fragment;
     elements.list.closer.classList.add('display-none');
     elements.list.div.classList.remove('display-none');
     setListListeners();
 }
 
+//Busca por candidatos da legenda selecionada na lista
 function searchCandidates(obj, stage, prefix) {
     const candidatesObj = obj[stage].candidates;
     const matchCandidatesObj = Object.keys(candidatesObj)
@@ -467,12 +513,15 @@ function searchCandidates(obj, stage, prefix) {
             acc[key] = { ...candidatesObj[key] };
             return acc;
         }, {});
+
     return matchCandidatesObj;
 }
 
+//Exibir candidatos na lista (cola)
 function showCandidates(party, list) {
     let fragment = '';
     elements.list.head.innerHTML = `${party} ${votingData[appState.currentStage].parties[party].initials} - ${votingData[appState.currentStage].parties[party].name} - <strong>${votingData[appState.currentStage].office}</strong>`;
+    
     Object.entries(list).forEach(([key, value]) => {
         fragment += `
             <div id="list-card-candidate-${key}" class="candidates-list__card">
@@ -482,20 +531,25 @@ function showCandidates(party, list) {
             </div>
         `;
     });
+
     elements.list.body.innerHTML = fragment;
     elements.list.closer.classList.remove('display-none');
 }
 
 
 /* FUNÇÕES DE CONTROLE DE TELA */
+//Atualizar TEXTO dos elementos HTML
 function updateUI(element, content) {
     if(element) element.textContent = content;
 }
 
+//Capturar elementos HTML pelo ID
 function getElements() {
     const elmnts = {
         pageTitle: getElId('page-title'),
+
         urnaDisplay: getElId('urna-display'),
+
         display: {
             headerLeft: getElId('header-left'),
             mainMessage: getElId('display-main-msg'),
@@ -520,6 +574,7 @@ function getElements() {
             footerL2: getElId('display-footer-l2'),
             footerL3: getElId('display-footer-l3')  
         },
+
         photos: {
             div: getElId('display-photos'),
             holderImg: getElId('holder-img'),
@@ -531,36 +586,47 @@ function getElements() {
             vice2Img: getElId('vice2-img'),
             vice2Label: getElId('vice2-photo-label')
         },
+
         keyboard: getElId('urna-keyboard'),
+
         modal: { 
             div: getElId('modal'),
             message: getElId('popup-message'),
             election: getElId('select-election'),
             closer: getElId('modal-closer')
         },
+
         paper: {
             div: getElId('voting-paper'),
             closer: getElId('paper-closer'),
             info: getElId('paper-voting-info'),
             body: getElId('paper-body')
         },
+
         list: {
             div: getElId('candidates-list-div'),
             head: getElId('candidates-list-head'),
             body: getElId('candidates-list-body'),
             closer: getElId('candidates-list-closer')
+        },
+
+        copy: {
+            createYear: getElId('copy-create-year'),
+            currentYear: getElId('copy-current-year')
         }
     }
 
     return elmnts;
 }
 
+//Restaurar-Limpar a tela da urna
 function resetDisplay() {
     appState.reset();
     elements.urnaDisplay.replaceWith(originalUrnaDisplay.cloneNode(true));
     elements = getElements();
 }
 
+//Fechar pop-up inicial de seleção da eleição
 function closeWelcomeModal() {
     elements.modal.div.classList.add('display-none')
     document.body.classList.remove('no-scroll');
@@ -570,6 +636,7 @@ function closeWelcomeModal() {
     elements.modal.election.innerHTML = '';
 }
 
+//Montar o HTML do boletim de urna
 async function printResults() {
     elements.paper.info.innerHTML = `${appState.currentDb.type}<br/>${appState.currentDb.shift}<br/>(${getDate().toLocaleDateString()})`;
 
@@ -591,19 +658,19 @@ async function printResults() {
 
         <table class="paper__table">
             <tr>
-                <td>Eleitores aptos</td> <td>${(urnaInfo.voters.toString()).padStart(4, '0')}</td>
+                <td>Eleitores aptos</td> <td>${(votingPlace.voters.toString()).padStart(4, '0')}</td>
             </tr>
             <tr>
                 <td>Comparecimento</td> <td>${(appState.voters.toString()).padStart(4, '0')}</td>
             </tr>
             <tr>
-                <td>Eleitores faltosos</td> <td>${((urnaInfo.voters - appState.voters).toString()).padStart(4, '0')}</td>
+                <td>Eleitores faltosos</td> <td>${((votingPlace.voters - appState.voters).toString()).padStart(4, '0')}</td>
             </tr>
         </table>
 
         <table class="paper__table">
             <tr>
-                <td>Código de Identificação UE</td> <td>${urnaInfo.ueId}</td>
+                <td>Código de Identificação UE</td> <td>${votingPlace.ueId}</td>
             </tr>
             <tr>
                 <td>Data de Abertura da UE</td> <td>${startDate.toLocaleDateString()}</td>
@@ -643,6 +710,7 @@ async function printResults() {
                         <th>Nome do candidato</th> <th>Num cand</th> <th>Votos</th>
                     </tr>
             `;
+
             Object.entries(value.candidates).forEach(([key, value]) => {
                 fragment += `
                     <tr>
@@ -651,12 +719,13 @@ async function printResults() {
                 `;
                 nominalVotes += value.votes
             });
+
             fragment += `
                 </table>
                 --------------------------------------------
                 <table class="paper__table">
                     <tr>
-                        <td>Eleitores aptos</td> <td>${(urnaInfo.voters.toString()).padStart(4, '0')}</td>
+                        <td>Eleitores aptos</td> <td>${(votingPlace.voters.toString()).padStart(4, '0')}</td>
                     </tr>
                     <tr>
                         <td>Total de votos Nominais</td> <td>${(nominalVotes.toString()).padStart(4, '0')}</td>
@@ -699,6 +768,7 @@ async function printResults() {
                             <td>${value.name}</td> <td>${key}</td> <td>${(value.votes.toString()).padStart(4, '0')}</td>
                         </tr>
                     `;
+
                     partyVotes += value.votes;
                     nominalVotes += value.votes;
                 });
@@ -723,7 +793,7 @@ async function printResults() {
                 --------------------------------------------
                 <table class="paper__table">
                     <tr>
-                        <td>Eleitores aptos</td> <td>${(urnaInfo.voters.toString()).padStart(4, '0')}</td>
+                        <td>Eleitores aptos</td> <td>${(votingPlace.voters.toString()).padStart(4, '0')}</td>
                     </tr>
                     <tr>
                         <td>Total de votos Nominais</td> <td>${(nominalVotes.toString()).padStart(4, '0')}</td>
@@ -749,8 +819,10 @@ async function printResults() {
             `;
         }
     });
+
     const votingHash = await generateHash(fragment);
     const qrcodeURL = await generateQrCode(votingHash);
+
     fragment += `
         --------------------------------------------
         --------------------------------------------
@@ -764,29 +836,35 @@ async function printResults() {
             </tr>
         </table>
     `;
+
     elements.paper.body.innerHTML = fragment;
 }
 
 /* FUNÇÕES AUXILIARES */
+//Definir e formatar dia, data e hora atual
 function getDate() {
     let fullDate = new Date();
     let currentDay = fullDate.getDay();
     currentDay = setLocalDay(currentDay);
     let localDate = `${currentDay} ${fullDate.toLocaleDateString()} ${fullDate.toLocaleTimeString()}`;
     updateUI(elements.display.headerLeft, localDate);
+
     return fullDate;
 }
 
+//Determinar iniciais correspondente ao dia da semana atual
 function setLocalDay(day) {
     const days = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
     return days[day];
 }
 
+//Gerador de códigos de verificação
 function generateVerifyId() {
     const number = Math.floor(1000000000 + Math.random() * 9000000000);
     return number.toLocaleString('pt-BR');
 }
 
+//Gerador de hash dos resultados da votação
 async function generateHash(text) {
     const encoder = new TextEncoder();
     const data = encoder.encode(text);
@@ -799,6 +877,7 @@ async function generateHash(text) {
     return hashHex;
 }
 
+//Gerar QR Code para verificação do hash
 async function generateQrCode(content) {
     const url = 'https://api.qrserver.com/v1/create-qr-code/';
     const size = 'size=300x300';
@@ -807,12 +886,25 @@ async function generateQrCode(content) {
         .catch(function(error) {
             return error;
         });
+
     const data = response.url;
+
     return data;
 }
 
+//Obter o ano e verificar a criação do site para completar o COPYRIGHT do footer
+(() => {
+    const year = new Date().getFullYear();
+    if(year > Number(elements.copy.createYear.textContent)) {
+        elements.copy.currentYear.textContent = ` - ${year}`;
+    }
+
+    return year
+})();
+
 /* LISTENERS DO MODAL */
 function setModalListeners() {
+    //Seleção de tipos de eleição do pop-up inicial
     document.querySelectorAll('.modal__election__card').forEach(button => {
         button.addEventListener('click', () => {
             const key = button.getAttribute('data-key');
@@ -824,6 +916,7 @@ function setModalListeners() {
         });
     });
 
+    //Botão para fechar pop-ups de erro
     elements.modal.closer.addEventListener('click', () => {
         elements.modal.div.classList.add('display-none')
         document.body.classList.remove('no-scroll');
@@ -836,10 +929,12 @@ elements.keyboard.addEventListener('click', (e) => {
 
     if(appState.currentStage < votingData.length) {
         if(!appState.btnCooldown) {
+            //Botões numéricos
             if(button('urna__keyboard__number-button')) {
                 registerNumber(e.target.getAttribute('data-key'));
             }
 
+            //Botão de voto em branco
             if(button('urna__keyboard__blank')) {
                 if(appState.number.length === 0) {
                     appState.number = 'BRANCO';
@@ -849,6 +944,7 @@ elements.keyboard.addEventListener('click', (e) => {
                 }
             }
 
+            //Botão confirma
             if(button('urna__keyboard__confirm')) {
                 if(appState.number.length >= 2) {
                     handleConfirm();
@@ -858,6 +954,7 @@ elements.keyboard.addEventListener('click', (e) => {
             }
         }
 
+        //Botão corrige
         if(button('urna__keyboard__correct')) {
             if(appState.number.length > 0) {
                 resetDisplay();
@@ -871,8 +968,10 @@ elements.keyboard.addEventListener('click', (e) => {
 
 /* LISTENERS DA LISTA DE CANDIDATOS */
 function setListListeners() {
+    //Selecionar partido na lista (cola) e abrir candidatos
     elements.list.body.addEventListener('click', (e) => {
         const linkElement = e.target.closest('.list__card--link');
+        
         if(linkElement) {
             const key = linkElement.getAttribute('data-key');
             const matchCandidates = searchCandidates(votingData, appState.currentStage, key);
@@ -880,6 +979,7 @@ function setListListeners() {
         }
     });
 
+    //Botão voltar na lista de candidatos para a lista de partidos
     elements.list.closer.addEventListener('click', () => {
         elements.list.closer.classList.add('display-none');
         setPartiesList();
@@ -887,6 +987,7 @@ function setListListeners() {
 }
 
 /* LISTENERS DO BOLETIM DE URNA */
+//Botão X de fechamento do boletim e reinício da votação
 elements.paper.closer.addEventListener('click', () => {
     displayManager.paperResults(false);
     document.body.classList.remove('no-scroll');
@@ -897,19 +998,26 @@ elements.paper.closer.addEventListener('click', () => {
 /* LISTENERS BOTÕES DE CONTROLE DA PÁGINA */
 controlsBtn.addEventListener('click', async (e) => {
     const button = (element) => e.target.classList.contains(element);
+    
+    //Botão próximo eleitor
     if(button('control__button--next')) {
         newVoter();
+
+    //Botão finalizar e ver boletim
     } else if(button('control__button--end')) {
         endDate = getDate();
         await printResults();
         document.body.classList.add('no-scroll');
         displayManager.paperResults(true);
+
+    //botão reiniciar votação
     } else if(button('control__button--restart')) {
         restartVoting();
     }
 });
 
-
-
-/* START DA APLICAÇÃO */
-welcome();
+/*INICIAR APLICAÇÃO */
+(() => {
+    displayManager.modalAlert('start');
+    setModalListeners();
+})();

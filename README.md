@@ -1,89 +1,91 @@
-# Urna Eletrônica Digital
+# 🗳️ Simulação de Urna Eletrônica
 
-[![Licença](https://img.shields.io/badge/licence-MIT-blue)](LICENSE)
+Este projeto é uma **simulação de urna eletrônica** desenvolvida para fins educacionais, demonstrando habilidades em **JavaScript, manipulação do DOM e lógica de programação**. Ele simula uma votação eletrônica, permitindo o registro de votos e exibição de resultados de forma interativa e dinâmica.
 
-## Descrição
+## 🚀 Tecnologias Utilizadas
 
-Este projeto é uma **simulação de urna eletrônica** desenvolvida para fins educacionais como parte do meu portfólio para demonstrar habilidades em JavaScript e lógica de programação. Ele simula uma votação eletrônica, permitindo o registro de votos e exibição de resultados de forma interativa e dinâmica. 
+- **HTML** → Estruturação da interface da urna.
+- **CSS** → Estilização e design responsivo utilizando **Flexbox** e **Grid**.
+- **JavaScript** → Implementação da lógica de votação, manipulação do DOM e integração com efeitos visuais e sonoros.
 
-O objetivo do projeto é demonstrar habilidades técnicas no desenvolvimento de aplicações web e a manipulação de elementos DOM, além de demonstrar o uso de conceitos de **HTML**, **CSS**, e **JavaScript**.
+## 🎯 Funcionalidades Principais
 
-## Tecnologias Utilizadas
+- 📌 **Interface Interativa**: O usuário pode interagir com a urna digital através de botões para selecionar candidatos.
+- ✅ **Votação**: Permite ao usuário selecionar um candidato e confirmar o voto.
+- 🔍 **Validação de Voto**: Garante que apenas números válidos sejam inseridos.
+- 📊 **Totalização de Votos**: Calcula e exibe o número de votos por candidato.
+- 🔊 **Feedback Visual e Sonoro**: Atualizações em tempo real da interface e efeitos sonoros ao votar.
 
-* **HTML**: Estruturação do conteúdo da página e organização da interface.
-* **CSS**: Estilização do layout e design responsivo, utilizando técnicas modernas como Flexbox e Grid.
-* **JavaScript**: Lógica da aplicação, incluindo manipulação de dados de votos e interação com o usuário.
+## 📚 Conceitos e Habilidades Aplicadas
 
-## Funcionalidades
+Este projeto reforça conhecimentos fundamentais em desenvolvimento web, incluindo:
 
-* **Interface interativa**: O usuário pode interagir com a urna digital através de botões para selecionar candidatos com Feedback visual e sonoro durante a votação.
-*   **Votação:** Permite ao usuário selecionar um candidato e confirmar o voto.
-*   **Validação de Voto:** Garante que apenas números válidos sejam inseridos.
-*   **Totalização de Votos:** Calcula e exibe o número de votos por candidato.
+- 🔹 **Manipulação do DOM** → Atualização dinâmica da interface de acordo com as ações do usuário.
+- 🔹 **Eventos em JavaScript** → Captura de cliques nos botões da urna para interações com o usuário.
+- 🔹 **Estruturas de Dados** → Uso de **arrays** para armazenar candidatos e contagem de votos.
+- 🔹 **Funções JavaScript** → Código modular e reutilizável para maior organização e manutenção.
+- 🔹 **Áudio no Browser** → Implementação de efeitos sonoros para simular a experiência real de uma urna.
 
-## Demonstração de Competências em JavaScript
+## 📌 Como Executar o Projeto
 
-*   **Funções:** Utilização de funções para organizar o código em blocos reutilizáveis para melhor manutenção, a legibilidade e reutilização da lógica, como as funções de registrar votos e calcular o resultado final.
-*   **Arrays:** Utilização para armazenar e manipular dados de candidatos e votos durante a votação.
-*   **Busca:** Implementação de buscas eficientes dentro de arrays, como procurar candidatos selecionados e realizar a contagem de votos.
-*   **Áudio:** Integração de efeitos sonoros para aprimorar a experiência do usuário.
-*   **Manipulação do DOM:** Manipulação dinâmica do DOM (Document Object Model) para atualização da interface conforme a interação do usuário, como a mudança dos votos e a exibição de resultados.
-
-## Como Executar
-
-1.  Clone o repositório: `git clone https://github.com/dborgesdev/urna-eletronica-digital.git`
-2.  Navegue até a pasta `dev`.
-3.  Abra o arquivo `index.html` no seu navegador.
-
-## Contribuição
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e enviar pull requests.
-
-## Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+1. Clone este repositório:
+   ```sh
+   git clone https://github.com/seu-usuario/simulacao-urna.git
+   ```
+2. Acesse a pasta do projeto:
+   ```sh
+   cd simulacao-urna
+   ```
+3. Abra o arquivo `index.html` no navegador.
 
 ---
 
-## Digital Voting Machine
+🚨 **Aviso Importante**
+Este projeto é uma **simulação educacional** baseada no simulador oficial do TSE e não representa uma urna eletrônica real. Ele foi desenvolvido estritamente para fins de aprendizado e demonstração de habilidades técnicas, **não possuindo qualquer vínculo com o sistema eleitoral brasileiro**. O autor **não se responsabiliza pelo uso indevido do código** e reforça que este projeto **não visa falsificar, comprometer ou induzir ao erro sobre o funcionamento real de urnas eletrônicas.**
 
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+***
 
-## Description
+# 🗳️ Electronic Voting Machine Simulation
 
-This project simulates a digital voting machine, developed as part of my portfolio to demonstrate skills in JavaScript and programming logic. The application allows voting for candidates, displaying results, and manipulating data interactively.
+This project is an **electronic voting machine simulation** developed for educational purposes, showcasing skills in **JavaScript, DOM manipulation, and programming logic**. It simulates an electronic voting process, allowing users to register votes and display results interactively.
 
-## Technologies Used
+## 🚀 Technologies Used
 
-*   **HTML:** Web page structure.
-*   **CSS:** Styling and interface design.
-*   **JavaScript:** Application logic, data manipulation, and interactivity.
+- **HTML** → Structuring the voting interface.
+- **CSS** → Styling and responsive design using **Flexbox** and **Grid**.
+- **JavaScript** → Implementing voting logic, DOM manipulation, and integrating visual and sound effects.
 
-## Features
+## 🎯 Main Features
 
-*   **Voting:** Allows the user to select a candidate and confirm the vote.
-*   **Vote Validation:** Ensures that only valid numbers are entered.
-*   **Vote Count:** Calculates and displays the number of votes per candidate.
-*   **Interactive Interface:** Visual and sound feedback during voting.
+- 📌 **Interactive Interface**: Users can interact with the digital voting machine using buttons to select candidates.
+- ✅ **Voting System**: Allows users to choose a candidate and confirm their vote.
+- 🔍 **Vote Validation**: Ensures that only valid numbers are entered.
+- 📊 **Vote Counting**: Calculates and displays the number of votes per candidate.
+- 🔊 **Visual and Audio Feedback**: Real-time UI updates and sound effects during voting.
 
-## Demonstration of JavaScript Skills
+## 📚 Applied Concepts and Skills
 
-*   **Functions:** Organization of code into reusable blocks for better maintenance.
-*   **Arrays:** Use to store and manipulate candidate and vote data.
-*   **Array Search:** Implementation of search algorithms to find candidates.
-*   **Audio:** Integration of sound effects to enhance the user experience.
-*   **DOM Manipulation:** Dynamic updating of the interface with the results.
+This project reinforces essential web development skills, including:
 
-## How to Run
+- 🔹 **DOM Manipulation** → Dynamically updating the interface based on user actions.
+- 🔹 **JavaScript Events** → Capturing button clicks for user interactions.
+- 🔹 **Data Structures** → Using **arrays** to store candidates and count votes.
+- 🔹 **JavaScript Functions** → Modular and reusable code for better organization and maintainability.
+- 🔹 **Browser Audio Integration** → Implementing sound effects to simulate a real voting machine experience.
 
-1.  Clone the repository: `git clone https://github.com/dborgesdev/urna-eletronica-digital.git`
-2.  Navigate to the `dev` folder.
-3.  Open the `index.html` file in your browser.
+## 📌 How to Run the Project
 
-## Contribution
+1. Clone this repository:
+   ```sh
+   git clone https://github.com/your-username/voting-simulation.git
+   ```
+2. Navigate to the project folder:
+   ```sh
+   cd voting-simulation
+   ```
+3. Open the `index.html` file in your browser.
 
-Contributions are welcome! Feel free to open issues and submit pull requests.
+---
 
-## License
-
-This project is under the MIT license. See the [LICENSE](LICENSE) file for more details.
+🚨 **Disclaimer**
+This project is an **educational simulation** inspired by the official TSE simulator and does not represent a real electronic voting machine. It was developed strictly for learning purposes and technical skill demonstration. **It has no connection to the Brazilian electoral system.** The author **is not responsible for any misuse of this code** and emphasizes that this project **does not intend to falsify, compromise, or mislead anyone regarding the real functioning of electronic voting machines.**
