@@ -568,7 +568,7 @@ function closeWelcomeModal() {
     elements.modal.election.innerHTML = '';
 }
 
-function printResults() {
+async function printResults() {
     elements.paper.info.innerHTML = `${appState.currentDb.type}<br/>${appState.currentDb.shift}<br/>(${getDate().toLocaleDateString()})`;
 
     let fragment = `
@@ -747,7 +747,21 @@ function printResults() {
             `;
         }
     });
-
+    const votingHash = await generateHash(fragment);
+    const qrcodeURL = await generateQrCode(votingHash);
+    fragment += `
+        --------------------------------------------
+        --------------------------------------------
+        <img class="paper__qrcode" src="${qrcodeURL}" />
+        <table class="paper__table">
+            <tr>
+                <td>ASSINATURA QR CODE:</td>
+            </tr>
+            <tr>
+                <td class="paper__table__td--breakword">${votingHash.toUpperCase()}</td>
+            </tr>
+        </table>
+    `;
     elements.paper.body.innerHTML = fragment;
 }
 
@@ -769,6 +783,30 @@ function setLocalDay(day) {
 function generateVerifyId() {
     const number = Math.floor(1000000000 + Math.random() * 9000000000);
     return number.toLocaleString('pt-BR');
+}
+
+async function generateHash(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest("SHA-512", data);
+    
+    // Converter para string hexadecimal
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
+    
+    return hashHex;
+}
+
+async function generateQrCode(content) {
+    const url = 'https://api.qrserver.com/v1/create-qr-code/';
+    const size = 'size=300x300';
+
+    const response = await fetch(url + '?' + size + '&data=' + content)
+        .catch(function(error) {
+            return error;
+        });
+    const data = response.url;
+    return data;
 }
 
 /* LISTENERS DO MODAL */
@@ -851,13 +889,13 @@ elements.paper.closer.addEventListener('click', () => {
 });
 
 /* LISTENERS BOTÕES DE CONTROLE DA PÁGINA */
-controlsBtn.addEventListener('click', (e) => {
+controlsBtn.addEventListener('click', async (e) => {
     const button = (element) => e.target.classList.contains(element);
     if(button('control__button--next')) {
         newVoter();
     } else if(button('control__button--end')) {
         endDate = getDate();
-        printResults();
+        await printResults();
         displayManager.paperResults(true);
     } else if(button('control__button--restart')) {
         restartVoting();

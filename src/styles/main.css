@@ -523,6 +523,7 @@ body {
 }
 
 .paper__body {
+    width: 100%;
     margin-top: 15px;
 }
 
@@ -532,8 +533,13 @@ body {
 }
 
 .paper__table tr {
+    width: 100%;
     display: flex;
     justify-content: space-between;
+}
+.paper__table__td--breakword {
+    width: 380px;
+    overflow-wrap: break-word;
 }
 
 .paper__td--center {
@@ -563,6 +569,12 @@ body {
 .paper__results tr th:first-of-type,
 .paper__results tr td:first-of-type {
     text-align: left;
+}
+
+.paper__qrcode {
+    width: 300px;
+    height: 300px;
+    margin: 15px 0;
 }
 
 /* ESTILOS DA LISTA DE CANDIDATOS */
