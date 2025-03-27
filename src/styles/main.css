@@ -14,13 +14,7 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    /* user-select: none; */
-}
-
-.blink {
-    animation-name: blink;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
+    user-select: none;
 }
 
 /* ESTILOS DO CABEÇALHO */
@@ -377,10 +371,14 @@ body {
     cursor: pointer;
 }
 
-/* ESTILOS DO BOTÃO DE REINICIO */
+/* ESTILOS DOS BOTÕES DE CONTROLE */
 .voting-controls {
+    max-width: 990px;
+    margin: auto;
+    margin-bottom: 50px;
     display: flex;
     justify-content: center;
+    gap: 10px;
 }
 
 .control__button {
@@ -657,6 +655,172 @@ body {
     cursor: pointer;
 }
 
+@media (max-width: 1023px) {
+    .header__title {
+        margin: 20px;
+        line-height: 40px;
+    }
+
+    /* ESTILOS DA URNA ELETRÔNICA */
+    .urna {
+        width: 600px;
+        height: 720px;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .urna__keyboard {
+        width: 550px;
+    }
+
+    /* ESTILOS DA LISTA DE CANDIDATOS */
+        .candidates-list__head {
+        padding: 0 15px;
+        font-size: 20px;
+    }
+
+    .candidates-list__card {
+        width: 120px;
+    }
+
+    /*ESTILOS BOTÕES DE CONTROLE */
+    .voting-controls {
+        max-width: 600px;
+    }
+
+    .control__button {
+        padding: 10px 5px;
+        font-size: 18px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 650px) {
+    .header__title {
+        font-size: 28px;
+    }
+
+    /* ESTILOS DA URNA ELETRÔNICA */
+    .urna {
+        width: 400px;
+    }
+
+    .urna__keyboard {
+        width: 360px;
+    }
+
+    /* ESTILOS DA TELA DA URNA */
+    .urna__display {
+        width: 360px;
+    }
+
+    /* Seção superior da tela da urna */
+    .display__header-left {
+        font-size: 14px;
+        line-height: 14px;
+    }
+
+    .display__header-center {
+        font-size: 16px;
+    }
+
+    /* Seção principal da tela da urna */
+    .main__message--start {
+        font-size: 20px;
+    }
+
+    .main__message--blank {
+        font-size: 28px;
+    }
+
+    .main__message--end {
+        font-size: 120px;
+    }
+
+    .main__message__saving-bar {
+        height: 12px;
+    }
+
+    .urna__display__office {
+        margin-left: 20px;
+        text-align: left;
+    }
+
+    .display__label {
+        font-size: 14px;
+    }
+
+    .display__data {
+        font-size: 15px;
+    }
+
+    .display__row__alert {
+        font-size: 18px;
+    }
+
+    .urna__display__alert {
+        height: 34px;
+        font-size: 28px;
+    }
+
+    /* Seção inferior da tela da urna */
+    .urna__display__footer {
+        font-size: 12px;
+        letter-spacing: 0.3px;
+    }
+
+    .display__footer__alert {
+        padding-left: 15px;
+        font-size: 24px;
+    }
+
+    /* Seção lateral direita da tela da urna - fotos dos candidatos */
+    .holder__photo {
+        width: 90px;
+        height: 130px;
+    }
+
+    .holder__label {
+        font-size: 13px;
+    }
+
+    .vice__photo {
+        width: 70px;
+        height: 100px;
+    }
+
+    /* ESTILOS DA LISTA DE CANDIDATOS */
+    .candidates-list__head {
+        height: auto;
+        padding: 0 10px;
+        line-height: 30px;
+    }
+
+    .candidates-list__body {
+        margin: 0 10px;
+        flex-wrap: wrap;
+    }
+
+    .candidates-list__card {
+        width: 120px;
+    }
+
+    /*ESTILOS BOTÕES DE CONTROLE */
+    .voting-controls {
+        max-width: 400px;
+        margin-top: -30px;
+        margin-bottom: 25px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .control__button {
+        width: 250px;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+    }
+}
+
 /* MODIFICADORES DE CLASSES PARA O JS */
 .display-none {
     display: none;
@@ -686,4 +850,15 @@ body {
 
 .number__input--disabled {
     background-color: #ACACAC;
+}
+
+.blink {
+    animation-name: blink;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+.no-scroll {
+    overflow: hidden;
+    height: 100vh;
 }

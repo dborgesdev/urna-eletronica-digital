@@ -186,6 +186,7 @@ const displayManager = {
         }
         elements.modal.message.innerHTML = modalMsg;
         elements.modal.div.classList.remove('display-none');
+        document.body.classList.add('no-scroll');
     },
     paperResults: (show) => {
         elements.paper.div.classList.toggle('display-none', !show);
@@ -562,6 +563,7 @@ function resetDisplay() {
 
 function closeWelcomeModal() {
     elements.modal.div.classList.add('display-none')
+    document.body.classList.remove('no-scroll');
     elements.modal.message.classList.remove('pop-up__message--title');
     elements.modal.election.classList.add('display-none');
     elements.modal.closer.classList.remove('display-none');
@@ -822,7 +824,10 @@ function setModalListeners() {
         });
     });
 
-    elements.modal.closer.addEventListener('click', () => elements.modal.div.classList.add('display-none'));
+    elements.modal.closer.addEventListener('click', () => {
+        elements.modal.div.classList.add('display-none')
+        document.body.classList.remove('no-scroll');
+    });
 }
 
 /* LISTENERS DOS BOTÕES DA URNA */
@@ -884,6 +889,7 @@ function setListListeners() {
 /* LISTENERS DO BOLETIM DE URNA */
 elements.paper.closer.addEventListener('click', () => {
     displayManager.paperResults(false);
+    document.body.classList.remove('no-scroll');
     elements.paper.body.innerHTML = '';
     restartVoting();
 });
@@ -896,6 +902,7 @@ controlsBtn.addEventListener('click', async (e) => {
     } else if(button('control__button--end')) {
         endDate = getDate();
         await printResults();
+        document.body.classList.add('no-scroll');
         displayManager.paperResults(true);
     } else if(button('control__button--restart')) {
         restartVoting();
