@@ -1,6 +1,4 @@
-.zz {
-    z-index: 99;
-}
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 /* ESTILOS GERAIS DA PÁGINA */
 @keyframes blink {
@@ -16,6 +14,7 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+    /* user-select: none; */
 }
 
 .blink {
@@ -379,23 +378,35 @@ body {
 }
 
 /* ESTILOS DO BOTÃO DE REINICIO */
-.restart-voting {
+.voting-controls {
     display: flex;
     justify-content: center;
 }
 
-.restart__button {
+.control__button {
+    margin: 0 10px;
     padding: 10px 20px;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 600;
     color: #fff;
-    background-color: #3399FF;
     border: 1px solid #333;
     border-radius: 5px;
 }
 
-.restart__button:hover {
-    background-color: blue;
+.control__button--next {
+    background-color: #3399FF;
+}
+
+.control__button--end {
+    background-color: #20934E;
+}
+
+.control__button--restart {
+    background-color: #F5974F;
+}
+
+.control__button:hover {
+    opacity: 0.6;
     cursor: pointer;
 }
 
@@ -475,6 +486,83 @@ body {
 
 .card__election__shift {
     text-align: center;
+}
+
+/* ESTILO MODAL BOLETIM DE URNA */
+.paper__container {
+    width: 417px;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.paper {
+    width: 400px;
+    padding: 10px;
+    position: relative;
+    background-color: #fff;
+    font-family: "Space Mono", monospace;
+    font-size: 14px;
+}
+
+.paper__closer {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #ff0000;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.paper__head {
+    text-align: center;
+}
+
+.paper__body {
+    margin-top: 15px;
+}
+
+.paper__table {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.paper__table tr {
+    display: flex;
+    justify-content: space-between;
+}
+
+.paper__td--center {
+    width: 100%;
+    text-align: center;
+}
+
+.paper__results__title {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.paper__results__title__txt {
+    padding: 0 2px;
+    display: inline-block;
+    position: absolute;
+    background-color: #fff;
+}
+
+.paper__results tr {
+    display: grid;
+    grid-template-columns: 230px 75px 75px;
+    text-align: right;
+}
+
+.paper__results tr th:first-of-type,
+.paper__results tr td:first-of-type {
+    text-align: left;
 }
 
 /* ESTILOS DA LISTA DE CANDIDATOS */

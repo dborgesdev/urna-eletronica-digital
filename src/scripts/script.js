@@ -5,24 +5,195 @@ const database = [
     { type: 'Eleições Municipais', shift: '1° Turno', local:'Cidade/UF', dataSrc: municipaisPrimeiroTurnoJSON },
     { type: 'Eleições Municipais', shift: '2° Turno', local:'Cidade/UF', dataSrc: municipaisSegundoTurnoJSON }
 ]
-const votingPlace = 'Municipio: 99999 - Minha Cidade &nbsp Zona: 9999 Seção: 9999';
+const votingPlace = {cityCode: '99999', cityName: 'Minha Cidade', zone: '9999', section: '9999' };
+const urnaInfo = { ueId: '12345678', voters: 99 }
 
 /* DEFINIÇÃO DE VARIÁVEIS DE TRABALHO */
 let votingData;
+let votingResults;
 let currentTime;
+let startDate;
+let endDate;
 const appState = {
+    currentDb: {},
     currentStage: 0,
+    voters: 1,
     number: '',
-    confirmCooldown: false,
-    hasParty: false
+    btnCooldown: true,
+    hasParty: false,
+    candidateExist: false,
+
+    reset(type) {
+        this.number = '';
+        this.btnCooldown = false;
+        this.hasParty = false;
+        this.candidateExist = false;
+
+        if(type === 'full' || type === 'new'){
+            this.currentStage = 0;
+        }
+
+        if(type === 'full'){
+            this.currentDb = {};
+            this.voters = 1;
+            this.btnCooldown = true;
+        }
+    }
 }
 
 /* DEFINIÇÃO DE VARIÁVEIS DOS ELEMENTOS DA PÁGINA */
 const getElId = (element) => document.getElementById(element);
 const originalUrnaDisplay = getElId('urna-display').cloneNode(true);
-const restartBtn = getElId('restart-button');
-let elements;
-let displayManager;
+const controlsBtn = getElId('control-buttons');
+let elements = getElements();
+
+const displayManager = {
+    pageTitle: (text) => {
+        updateUI(elements.pageTitle, text);
+    },
+    headFooter: (type) => {
+        switch(type) {
+            case 'stage':
+                updateUI(elements.display.headerLeft, 'SEU VOTO PARA');
+                elements.display.footer.classList.toggle('display__footer--no-border');
+                elements.display.footer.classList.toggle('hide');
+            break;
+            case 'time':
+                let footerTxt = `Município: ${votingPlace.cityCode} - ${votingPlace.cityName} _ Zona: ${votingPlace.zone} _ Seção: ${votingPlace.section}`;
+                if(currentTime) clearInterval(currentTime);
+                getDate();
+                currentTime = setInterval(getDate, 1000);
+                elements.display.footerL3.classList.toggle('footer__l3--status');
+                updateUI(elements.display.footerL3, footerTxt);
+            break;
+        }
+    },
+    screen: (type) => {
+        let dspMsg;
+        if(type === 'blank') {
+            dspMsg = 'VOTO EM BRANCO';
+            elements.display.numberBox.classList.add('display-none');
+            elements.display.mainMessage.classList.add('blink');
+            displayManager.confirmVote();
+            displayManager.headFooter('stage');
+        } else if(type === 'start' || type === 'end' || type === 'saving'){ 
+            switch(type) {
+                case 'start':
+                    dspMsg = '<p>INICIO DA VOTAÇÃO</p><p>CARREGANDO DADOS...</p>';
+                break;
+                case 'end':
+                    dspMsg = 'FIM';
+                    resetDisplay();
+                    sound.end.play();
+                break;
+                case 'saving':
+                    dspMsg = `
+                    <div class="main__message__saving-bar"></div>
+                    <span class="message__saving-bar__label">GRAVANDO</span>
+                    `;
+                    resetDisplay();
+                break;
+            }
+            displayManager.headFooter('time');
+        }
+
+        elements.display.mainMessage.innerHTML = dspMsg;
+        elements.display.mainMessage.classList.add(`main__message--${type}`);
+        elements.display.mainMessage.classList.remove('display-none');
+    },
+    stage: (stage) => {
+        let fragment = '';
+        if(!votingData[stage].vice2) {
+            elements.display.mainRw5.classList.add('display-none');
+        }
+        updateUI(elements.display.office, votingData[stage].office);
+        elements.display.office.classList.remove('hide');
+        for(let i=0; i < votingData[stage].digits; i++) {
+            if(i === 0) {
+                fragment += `<div id="number-input-${i+1}" class="display__number__input blink"> </div>`;
+            } else {
+                fragment += `<div id="number-input-${i+1}" class="display__number__input"> </div>`;
+            }
+        }
+        elements.display.numberBox.innerHTML = fragment;
+    },
+    confirmVote: () => {
+        elements.display.footerAlert.classList.remove('display-none');
+        appState.btnCooldown = true;
+        setTimeout(() => {
+            elements.display.footerAlert.classList.add('display-none');
+            appState.btnCooldown = false;
+        }, 1000);
+    },
+    screenAlert: (type) => {
+        let numMsg;
+        if(type === 'legendVote' || type === 'nullCandidate') {
+            updateUI(elements.display.displayAlert, 'VOTO DE LEGENDA');
+            elements.display.displayAlert.classList.remove('hide');
+            if(type === 'nullCandidate') {
+                numMsg = 'CANDIDATO INEXISTENTE';
+            }
+        } 
+        if(type === 'wrongNumber' || type === 'nullCandidate') {
+            if(type === 'wrongNumber') {
+                numMsg = 'NÚMERO ERRADO';
+                updateUI(elements.display.displayAlert, 'VOTO NULO');
+                elements.display.displayAlert.classList.remove('hide');
+            }
+            updateUI(elements.display.rw2Alert, numMsg);
+            elements.display.rw2Alert.classList.remove('display-none');
+            elements.display.mainRw2.classList.remove('hide');
+        }
+    },
+    modalAlert: (type) => {
+        let modalMsg;
+        if(type === 'start') {
+            let fragment = '';
+            modalMsg = '<strong>Para Iniciar:</strong> Selecione a Eleição que Deseja Simular';
+            database.forEach((value, index) => {
+                fragment += `
+                <div id="election-${index}" class="modal__election__card" data-key="${index}">
+                    <div class="card__election__type">${value.type.toUpperCase()}</div>
+                    <div class="card__election__shift">${value.shift}</div>
+                </div>
+                `;
+            });
+            elements.modal.message.classList.add('pop-up__message--title');
+            elements.modal.election.classList.remove('display-none');
+            elements.modal.closer.classList.add('display-none');
+            elements.modal.election.innerHTML = fragment;
+        } else {
+            switch (type) {
+                case 'numbers':
+                    modalMsg = 'O número do candidato já está completo. Não é possível utilizar teclas numéricas neste momento';
+                break;
+                case 'blank':
+                    modalMsg = 'Para votar em <strong>BRANCO</strong> o campo de voto deve estar vazio.<br/>Aperte CORRIGE para apagar o campo de voto';
+                break;
+                case 'correct':
+                    modalMsg = 'Para utilizar o <strong>CORRIGE</strong> você deve ter digitado algum número ou ter votado em BRANCO';
+                break;
+                case 'confirm':
+                    if(votingData[appState.currentStage].nominal) {
+                        modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar o número do candidato ou votar em BRANCO';
+                    } else {
+                        modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar pelo menos o número do partido ou votar em BRANCO';
+                    }
+                break;
+            }
+
+            sound.error.play();
+        }
+        elements.modal.message.innerHTML = modalMsg;
+        elements.modal.div.classList.remove('display-none');
+    },
+    paperResults: (show) => {
+        elements.paper.div.classList.toggle('display-none', !show);
+    },
+    controlsBtn: (show) => {
+        controlsBtn.classList.toggle('display-none', !show);
+    }
+};
 
 /* DEFINIÇÃO DE VARIÁVEIS DE SOM DA URNA */
 const sound = {
@@ -33,24 +204,54 @@ const sound = {
 
 /* FUNÇÕES PRINCIPAIS */
 function welcome() {
-    getElements();
-    setDisplayManager();
     displayManager.modalAlert('start');
     setModalListeners();
-    setUrnaListeners();
 }
 
 async function init(dataSrc) { 
+    startDate = getDate();
     displayManager.screen('start');
     votingData = await getVotingData(dataSrc);
+    votingResults = initResults(votingData);
     clearInterval(currentTime);
     votingStages(0);
+    appState.btnCooldown = false;
 }
 
 function getVotingData(dataSrc) {
     // Lógica para importar os dados da votação por API ou DB
     return new Promise((resolve) => setTimeout(() => resolve(dataSrc), 1500));
-} 
+}
+
+function initResults(data) {
+    return data.map(item => {
+        const newItem = {
+            office: item.office,
+            nominal: item.nominal,
+            candidates: Object.keys(item.candidates).reduce((acc, key) => {
+                acc[key] = {
+                    name: item.candidates[key].name,
+                    votes: 0
+                };
+                return acc;
+            }, {}),
+            brancos: 0,
+            nulos: 0
+        };
+
+        if(!item.nominal) {
+            newItem.parties = Object.keys(item.parties).reduce((acc, key) => {
+                acc[key] = {
+                    name: item.parties[key].initials,
+                    votes: 0
+                };
+                return acc;
+            }, {});
+        }
+        
+        return newItem;
+    });
+}
 
 function votingStages(stage) {
     if(stage < votingData.length) {
@@ -62,7 +263,7 @@ function votingStages(stage) {
         displayManager.screen('saving');
         setTimeout(() => {
             displayManager.screen('end');
-            displayManager.restartBtn(true)
+            displayManager.controlsBtn(true)
         }, 1000);
     }
 }
@@ -80,9 +281,70 @@ function registerNumber(key) {
             let nextNumberBox = getElId(`number-input-${appState.number.length + 1}`);
             nextNumberBox.classList.add('blink');
         } else {
-            searchCandidate(appState.number);
+            appState.candidateExist = searchCandidate(appState.number);
         }
     }
+}
+
+function handleConfirm() {
+    if(appState.number.length < votingData[appState.currentStage].digits) {
+        if(!votingData[appState.currentStage].nominal) {
+            if(appState.hasParty) {
+                displayManager.screenAlert('legendVote')
+            }
+            displayManager.confirmVote();
+            for(let i = appState.number.length + 1; i <= votingData[appState.currentStage].digits; i++) {
+                appState.number += ' '
+                getElId(`number-input-${i}`).classList.remove('blink');
+                getElId(`number-input-${i}`).classList.add('number__input--disabled');
+            }
+        } else {
+            displayManager.modalAlert('confirm');
+        }
+    } else {
+        registerVote(appState.number, appState.currentStage);
+        resetDisplay();
+        appState.currentStage++;
+        sound.stage.play();
+        votingStages(appState.currentStage);
+    }
+}
+
+function registerVote(number, stage) {
+    number = number.trim();
+    if(appState.hasParty) {
+        if(appState.candidateExist) {
+            votingResults[stage].candidates[number].votes++
+        } else {
+            if(!votingData[stage].nominal) {
+                number = number.slice(0, 2);
+                votingResults[stage].parties[number].votes++
+            } else {
+                votingResults[stage].nulos++
+            }
+        }       
+    } else if(number === 'BRANCO') {
+            votingResults[stage].brancos++
+    } else {
+        votingResults[stage].nulos++
+    }
+}
+
+function newVoter() {
+    appState.voters++;
+    appState.reset('new');
+    displayManager.screen('start');
+    clearInterval(currentTime);
+    votingStages(0);
+}
+
+function restartVoting() {
+    clearInterval(currentTime);
+    appState.reset('full');
+    resetDisplay();
+    displayManager.controlsBtn(false);
+    displayManager.modalAlert('start');
+    setModalListeners();
 }
 
 /* FUNÇÕES DE BUSCA E DISPLAY DE DADOS */
@@ -145,6 +407,8 @@ function searchCandidate(number) {
 
     displayManager.confirmVote();
     elements.display.mainRw2.classList.remove('hide');
+
+    return candidate;
 }
 
 function checkCandidateSex() {
@@ -194,8 +458,8 @@ function setPartiesList() {
     setListListeners();
 }
 
-function searchCandidates(prefix) {
-    const candidatesObj = votingData[appState.currentStage].candidates;
+function searchCandidates(obj, stage, prefix) {
+    const candidatesObj = obj[stage].candidates;
     const matchCandidatesObj = Object.keys(candidatesObj)
         .filter(key => key.startsWith(prefix))
         .reduce((acc, key) => {
@@ -224,11 +488,11 @@ function showCandidates(party, list) {
 
 /* FUNÇÕES DE CONTROLE DE TELA */
 function updateUI(element, content) {
-    if (element) element.textContent = content;
+    if(element) element.textContent = content;
 }
 
 function getElements() {
-    elements = {
+    const elmnts = {
         pageTitle: getElId('page-title'),
         urnaDisplay: getElId('urna-display'),
         display: {
@@ -266,17 +530,18 @@ function getElements() {
             vice2Img: getElId('vice2-img'),
             vice2Label: getElId('vice2-photo-label')
         },
-        keyboard: {
-            numbers: getElId('urna-keyboard-numbers'),
-            blank: getElId('blank-btn'),
-            correct: getElId('correct-btn'),
-            confirm: getElId('confirm-btn')
-        },
+        keyboard: getElId('urna-keyboard'),
         modal: { 
             div: getElId('modal'),
             message: getElId('popup-message'),
             election: getElId('select-election'),
             closer: getElId('modal-closer')
+        },
+        paper: {
+            div: getElId('voting-paper'),
+            closer: getElId('paper-closer'),
+            info: getElId('paper-voting-info'),
+            body: getElId('paper-body')
         },
         list: {
             div: getElId('candidates-list-div'),
@@ -285,158 +550,14 @@ function getElements() {
             closer: getElId('candidates-list-closer')
         }
     }
+
+    return elmnts;
 }
 
 function resetDisplay() {
-    appState.number = '';
+    appState.reset();
     elements.urnaDisplay.replaceWith(originalUrnaDisplay.cloneNode(true));
-    getElements();
-}
-
-function setDisplayManager() {
-    displayManager = {
-        pageTitle: (text) => {
-            updateUI(elements.pageTitle, text);
-        },
-        headFooter: (type) => {
-            switch(type) {
-                case 'stage':
-                    updateUI(elements.display.headerLeft, 'SEU VOTO PARA');
-                    elements.display.footer.classList.toggle('display__footer--no-border');
-                    elements.display.footer.classList.toggle('hide');
-                break;
-                case 'time':
-                    if(currentTime) clearInterval(currentTime);
-                    getDate();
-                    currentTime = setInterval(getDate, 1000);
-                    elements.display.footerL3.classList.toggle('footer__l3--status');
-                    elements.display.footerL3.innerHTML = votingPlace;
-                break;
-            }
-        },
-        screen: (type) => {
-            let dspMsg;
-            if(type === 'blank') {
-                dspMsg = 'VOTO EM BRANCO';
-                elements.display.numberBox.classList.add('display-none');
-                elements.display.mainMessage.classList.add('blink');
-                displayManager.confirmVote();
-                displayManager.headFooter('stage');
-            } else if(type === 'start' || type === 'end' || type === 'saving'){ 
-                switch(type) {
-                    case 'start':
-                        dspMsg = '<p>INICIO DA VOTAÇÃO</p><p>CARREGANDO DADOS...</p>';
-                    break;
-                    case 'end':
-                        dspMsg = 'FIM';
-                        resetDisplay();
-                        sound.end.play();
-                    break;
-                    case 'saving':
-                        dspMsg = `
-                        <div class="main__message__saving-bar"></div>
-                        <span class="message__saving-bar__label">GRAVANDO</span>
-                        `;
-                        resetDisplay();
-                    break;
-                }
-                displayManager.headFooter('time');
-            }
-
-            elements.display.mainMessage.innerHTML = dspMsg;
-            elements.display.mainMessage.classList.add(`main__message--${type}`);
-            elements.display.mainMessage.classList.remove('display-none');
-        },
-        stage: (stage) => {
-            let fragment = '';
-            if(!votingData[stage].vice2) {
-                elements.display.mainRw5.classList.add('display-none');
-            }
-            updateUI(elements.display.office, votingData[stage].office);
-            elements.display.office.classList.remove('hide');
-            for(let i=0; i < votingData[stage].digits; i++) {
-                if(i === 0) {
-                    fragment += `<div id="number-input-${i+1}" class="display__number__input blink"> </div>`;
-                } else {
-                    fragment += `<div id="number-input-${i+1}" class="display__number__input"> </div>`;
-                }
-            }
-            elements.display.numberBox.innerHTML = fragment;
-        },
-        confirmVote: () => {
-            elements.display.footerAlert.classList.remove('display-none');
-            appState.confirmCooldown = true;
-            setTimeout(() => {
-                elements.display.footerAlert.classList.add('display-none');
-                appState.confirmCooldown = false;
-            }, 1000);
-        },
-        screenAlert: (type) => {
-            let numMsg;
-            if(type === 'legendVote' || type === 'nullCandidate') {
-                updateUI(elements.display.displayAlert, 'VOTO DE LEGENDA');
-                elements.display.displayAlert.classList.remove('hide');
-                if(type === 'nullCandidate') {
-                    numMsg = 'CANDIDATO INEXISTENTE';
-                }
-            } 
-            if(type === 'wrongNumber' || type === 'nullCandidate') {
-                if(type === 'wrongNumber') {
-                    numMsg = 'NÚMERO ERRADO';
-                    updateUI(elements.display.displayAlert, 'VOTO NULO');
-                    elements.display.displayAlert.classList.remove('hide');
-                }
-                updateUI(elements.display.rw2Alert, numMsg);
-                elements.display.rw2Alert.classList.remove('display-none');
-                elements.display.mainRw2.classList.remove('hide');
-            }
-        },
-        modalAlert: (type) => {
-            let modalMsg;
-            if(type === 'start') {
-                let fragment = '';
-                modalMsg = '<strong>Para Iniciar:</strong> Selecione a Eleição que Deseja Simular';
-                database.forEach((value, index) => {
-                    fragment += `
-                    <div id="election-${index}" class="modal__election__card" data-key="${index}">
-                        <div class="card__election__type">${value.type.toUpperCase()}</div>
-                        <div class="card__election__shift">${value.shift}</div>
-                    </div>
-                    `;
-                });
-                elements.modal.message.classList.add('pop-up__message--title');
-                elements.modal.election.classList.remove('display-none');
-                elements.modal.closer.classList.add('display-none');
-                elements.modal.election.innerHTML = fragment;
-            } else {
-                switch (type) {
-                    case 'numbers':
-                        modalMsg = 'O número do candidato já está completo. Não é possível utilizar teclas numéricas neste momento';
-                    break;
-                    case 'blank':
-                        modalMsg = 'Para votar em <strong>BRANCO</strong> o campo de voto deve estar vazio.<br/>Aperte CORRIGE para apagar o campo de voto';
-                    break;
-                    case 'correct':
-                        modalMsg = 'Para utilizar o <strong>CORRIGE</strong> você deve ter digitado algum número ou ter votado em BRANCO';
-                    break;
-                    case 'confirm':
-                        if(votingData[appState.currentStage].nominal) {
-                            modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar o número do candidato ou votar em BRANCO';
-                        } else {
-                            modalMsg = 'Para <strong>CONFIRMAR</strong> é necessário digitar pelo menos o número do partido ou votar em BRANCO';
-                        }
-                    break;
-                }
-
-                sound.error.play();
-            }
-            elements.modal.message.innerHTML = modalMsg;
-            elements.modal.div.classList.remove('display-none');
-        },
-        restartBtn: (show) => {
-            restartBtn.classList.toggle('display-none', !show);
-        }
-    }
+    elements = getElements();
 }
 
 function closeWelcomeModal() {
@@ -447,6 +568,189 @@ function closeWelcomeModal() {
     elements.modal.election.innerHTML = '';
 }
 
+function printResults() {
+    elements.paper.info.innerHTML = `${appState.currentDb.type}<br/>${appState.currentDb.shift}<br/>(${getDate().toLocaleDateString()})`;
+
+    let fragment = `
+        <table class="paper__table">
+            <tr>
+                <td>Município</td> <td>${votingPlace.cityCode}</td>
+            </tr>
+            <tr>
+                <td class="paper__td--center">${votingPlace.cityName.toUpperCase()}</td>
+            </tr>
+            <tr>
+                <td>Zona Eleitoral</td> <td>${votingPlace.zone}</td>
+            </tr>
+            <tr>
+                <td>Seção Eleitoral</td> <td>${votingPlace.section}</td>
+            </tr>
+        </table>
+
+        <table class="paper__table">
+            <tr>
+                <td>Eleitores aptos</td> <td>${(urnaInfo.voters.toString()).padStart(4, '0')}</td>
+            </tr>
+            <tr>
+                <td>Comparecimento</td> <td>${(appState.voters.toString()).padStart(4, '0')}</td>
+            </tr>
+            <tr>
+                <td>Eleitores faltosos</td> <td>${((urnaInfo.voters - appState.voters).toString()).padStart(4, '0')}</td>
+            </tr>
+        </table>
+
+        <table class="paper__table">
+            <tr>
+                <td>Código de Identificação UE</td> <td>${urnaInfo.ueId}</td>
+            </tr>
+            <tr>
+                <td>Data de Abertura da UE</td> <td>${startDate.toLocaleDateString()}</td>
+            </tr>
+            <tr>
+                <td>Horário de Abertura da UE</td> <td>${startDate.toLocaleTimeString()}</td>
+            </tr>
+            <tr>
+                <td>Data de Fechamento da UE</td> <td>${endDate.toLocaleDateString()}</td>
+            </tr>
+            <tr>
+                <td>Horário de Fechamento da UE</td> <td>${endDate.toLocaleTimeString()}</td>
+            </tr>
+        </table>
+
+        <table class="paper__table">
+            <tr>
+                <td>Código Verificador: </td> <td>${generateVerifyId()}</td>
+            </tr>
+        </table>
+    `;
+    
+    votingResults.forEach((value, index) => {
+        let nominalVotes = 0;
+        let totalPartyVotes = 0;
+
+        fragment += `
+            <div class="paper__results__title">
+                --------------------------------------------
+                <span class="paper__results__title__txt"> ${value.office.toUpperCase()} </span>
+            </div>
+        `;
+        if(value.nominal) {
+            fragment += `
+                <table class="paper__table paper__results">
+                    <tr>
+                        <th>Nome do candidato</th> <th>Num cand</th> <th>Votos</th>
+                    </tr>
+            `;
+            Object.entries(value.candidates).forEach(([key, value]) => {
+                fragment += `
+                    <tr>
+                        <td>${value.name}</td> <td>${key}</td> <td>${(value.votes.toString()).padStart(4, '0')}</td>
+                    </tr>
+                `;
+                nominalVotes += value.votes
+            });
+            fragment += `
+                </table>
+                --------------------------------------------
+                <table class="paper__table">
+                    <tr>
+                        <td>Eleitores aptos</td> <td>${(urnaInfo.voters.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Total de votos Nominais</td> <td>${(nominalVotes.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Brancos</td> <td>${(value.brancos.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Nulos</td> <td>${(value.nulos.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Total apurado</td> <td>${((nominalVotes + value.brancos + value.nulos).toString()).padStart(4, '0')}</td>
+                    </tr>
+                </table>
+                <table class="paper__table">
+                    <tr>
+                        <td>Código Verificador: </td> <td>${generateVerifyId()}</td>
+                    </tr>
+                </table>
+            `;
+        } else {
+            Object.entries(value.parties).forEach(([key, value]) => {
+                const matchCandidates = searchCandidates(votingResults, index, key);
+                let partyVotes = value.votes;
+                totalPartyVotes += value.votes;
+
+                fragment += `
+                    <table class="paper__table paper__results">
+                        <tr>
+                            <th>Partido: ${key} - ${value.name}</th>
+                        </tr>
+                        <tr>
+                            <th>Nome do candidato</th> <th>Num cand</th> <th>Votos</th>
+                        </tr>
+                `;
+                
+                Object.entries(matchCandidates).forEach(([key, value]) => {
+                    fragment += `
+                        <tr>
+                            <td>${value.name}</td> <td>${key}</td> <td>${(value.votes.toString()).padStart(4, '0')}</td>
+                        </tr>
+                    `;
+                    partyVotes += value.votes;
+                    nominalVotes += value.votes;
+                });
+                
+                fragment += `
+                        <table class="paper__table">
+                            <tr>
+                                <td>Votos de legenda:</td> <td>${(value.votes.toString()).padStart(4, '0')}</td>
+                            </tr>
+                            <tr>
+                                <td>Total do partido:</td> <td>${((partyVotes).toString()).padStart(4, '0')}</td>
+                            </tr>
+                        </table>
+                        <table class="paper__table">
+                            <td class="paper__td--center">Código Verificador: ${generateVerifyId()}</td>
+                        </table>
+                    </table>
+                `;
+            });
+
+            fragment += `
+                --------------------------------------------
+                <table class="paper__table">
+                    <tr>
+                        <td>Eleitores aptos</td> <td>${(urnaInfo.voters.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Total de votos Nominais</td> <td>${(nominalVotes.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Total de votos de Legenda</td> <td>${(totalPartyVotes.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Brancos</td> <td>${(value.brancos.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Nulos</td> <td>${(value.nulos.toString()).padStart(4, '0')}</td>
+                    </tr>
+                    <tr>
+                        <td>Total apurado</td> <td>${((nominalVotes + totalPartyVotes + value.brancos + value.nulos).toString()).padStart(4, '0')}</td>
+                    </tr>
+                </table>
+                <table class="paper__table">
+                    <tr>
+                        <td>Código Verificador: </td> <td>${generateVerifyId()}</td>
+                    </tr>
+                </table>
+            `;
+        }
+    });
+
+    elements.paper.body.innerHTML = fragment;
+}
+
 /* FUNÇÕES AUXILIARES */
 function getDate() {
     let fullDate = new Date();
@@ -454,11 +758,17 @@ function getDate() {
     currentDay = setLocalDay(currentDay);
     let localDate = `${currentDay} ${fullDate.toLocaleDateString()} ${fullDate.toLocaleTimeString()}`;
     updateUI(elements.display.headerLeft, localDate);
+    return fullDate;
 }
 
 function setLocalDay(day) {
     const days = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
     return days[day];
+}
+
+function generateVerifyId() {
+    const number = Math.floor(1000000000 + Math.random() * 9000000000);
+    return number.toLocaleString('pt-BR');
 }
 
 /* LISTENERS DO MODAL */
@@ -467,6 +777,7 @@ function setModalListeners() {
         button.addEventListener('click', () => {
             const key = button.getAttribute('data-key');
             const dataSrc = database[key].dataSrc;
+            appState.currentDb = database[key];
             displayManager.pageTitle(`${database[key].type} ${database[key].shift} - ${database[key].local}`);
             init(dataSrc);
             closeWelcomeModal();
@@ -477,60 +788,43 @@ function setModalListeners() {
 }
 
 /* LISTENERS DOS BOTÕES DA URNA */
-function setUrnaListeners() {
-    elements.keyboard.numbers.addEventListener('click', (e) => {
-        if(e.target.classList.contains('urna__keyboard__number-button')) {
-            registerNumber(e.target.getAttribute('data-key'));
-        } 
-    });
+elements.keyboard.addEventListener('click', (e) => {
+    const button = (element) => e.target.classList.contains(element);
 
-    elements.keyboard.blank.addEventListener('click', () => {
-        if(appState.number.length === 0) {
-            appState.number = 'BRANCO';
-            displayManager.screen('blank');
-        } else {
-            displayManager.modalAlert('blank');
-        }
-    });
+    if(appState.currentStage < votingData.length) {
+        if(!appState.btnCooldown) {
+            if(button('urna__keyboard__number-button')) {
+                registerNumber(e.target.getAttribute('data-key'));
+            }
 
-    elements.keyboard.correct.addEventListener('click', () => {
-        if(appState.number.length !== 0) {
-            resetDisplay();
-            votingStages(appState.currentStage);
-        } else {
-            displayManager.modalAlert('correct');
-        }
-    });
+            if(button('urna__keyboard__blank')) {
+                if(appState.number.length === 0) {
+                    appState.number = 'BRANCO';
+                    displayManager.screen('blank');
+                } else {
+                    displayManager.modalAlert('blank');
+                }
+            }
 
-    elements.keyboard.confirm.addEventListener('click', () => {
-        if(!appState.confirmCooldown) {
-            if(appState.number.length >= 2 && appState.number.length < votingData[appState.currentStage].digits) {
-                if(!votingData[appState.currentStage].nominal) {
-                    if(appState.hasParty) {
-                        displayManager.screenAlert('legendVote')
-                    }
-                    displayManager.confirmVote();
-                    for(let i = appState.number.length + 1; i <= votingData[appState.currentStage].digits; i++) {
-                        appState.number += ' '
-                        getElId(`number-input-${i}`).classList.remove('blink');
-                        getElId(`number-input-${i}`).classList.add('number__input--disabled');
-                    }
+            if(button('urna__keyboard__confirm')) {
+                if(appState.number.length >= 2) {
+                    handleConfirm();
                 } else {
                     displayManager.modalAlert('confirm');
                 }
-            } else if(appState.number.length >= 2) {
+            }
+        }
+
+        if(button('urna__keyboard__correct')) {
+            if(appState.number.length > 0) {
                 resetDisplay();
-                appState.currentStage++;
-                sound.stage.play();
                 votingStages(appState.currentStage);
             } else {
-                displayManager.modalAlert('confirm');
+                displayManager.modalAlert('correct');
             }
-        } else {
-            sound.error.play();
         }
-    });
-}
+    }
+});
 
 /* LISTENERS DA LISTA DE CANDIDATOS */
 function setListListeners() {
@@ -538,7 +832,7 @@ function setListListeners() {
         const linkElement = e.target.closest('.list__card--link');
         if(linkElement) {
             const key = linkElement.getAttribute('data-key');
-            const matchCandidates = searchCandidates(key);
+            const matchCandidates = searchCandidates(votingData, appState.currentStage, key);
             showCandidates(key, matchCandidates);
         }
     });
@@ -549,15 +843,28 @@ function setListListeners() {
     });
 }
 
-/* LISTENERS ELEMENTOS DA PÁGINA */
-restartBtn.addEventListener('click', () => {
-    clearInterval(currentTime);
-    appState.currentStage = 0;
-    resetDisplay();
-    displayManager.restartBtn(false);
-    displayManager.modalAlert('start');
-    setModalListeners();
+/* LISTENERS DO BOLETIM DE URNA */
+elements.paper.closer.addEventListener('click', () => {
+    displayManager.paperResults(false);
+    elements.paper.body.innerHTML = '';
+    restartVoting();
 });
+
+/* LISTENERS BOTÕES DE CONTROLE DA PÁGINA */
+controlsBtn.addEventListener('click', (e) => {
+    const button = (element) => e.target.classList.contains(element);
+    if(button('control__button--next')) {
+        newVoter();
+    } else if(button('control__button--end')) {
+        endDate = getDate();
+        printResults();
+        displayManager.paperResults(true);
+    } else if(button('control__button--restart')) {
+        restartVoting();
+    }
+});
+
+
 
 /* START DA APLICAÇÃO */
 welcome();

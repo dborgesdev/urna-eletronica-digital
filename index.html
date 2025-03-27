@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <div class="urna__keyboard">
+            <div id="urna-keyboard" class="urna__keyboard">
                 <div id="urna-keyboard-numbers" class="urna__keyboard__numbers">
                     <div class="urna__keyboard__number-button" data-key="1">1</div>
                     <div class="urna__keyboard__number-button" data-key="2">2</div>
@@ -92,9 +92,9 @@
                     <div class="urna__keyboard__number-button number-button__zero" data-key="0">0</div>
                 </div>
                 <div class="urna__keyboard__actions">
-                    <div id="blank-btn" class="urna__keyboard__blank">BRANCO</div>
-                    <div id="correct-btn" class="urna__keyboard__correct">CORRIGE</div>
-                    <div id="confirm-btn" class="urna__keyboard__confirm">CONFIRMA</div>
+                    <div class="urna__keyboard__blank">BRANCO</div>
+                    <div class="urna__keyboard__correct">CORRIGE</div>
+                    <div class="urna__keyboard__confirm">CONFIRMA</div>
                 </div>
             </div>
         </div>
@@ -106,14 +106,29 @@
             <div id="candidates-list-closer" class="candidates-list__closer">[ VOLTAR ]</div>
         </div>
     </section>
-    <section class="restart-voting">
-        <div id="restart-button" class="restart__button display-none">REINICIAR SIMULAÇÃO</div>
+    <section id="control-buttons" class="voting-controls display-none">
+        <div class="control__button control__button--next">PRÓXIMO ELEITOR</div>
+        <div class="control__button control__button--end">FINALIZAR VOTAÇÃO</div>
+        <div class="control__button control__button--restart">REINICIAR SIMULAÇÃO</div>
     </section>
     <div id="modal" class="modal">
         <div class="modal__pop-up">
             <div id="popup-message" class="modal__pop-up__message"> </div>
             <div id="select-election" class="modal__select-election display-none"> </div>
             <div id="modal-closer" class="modal__closer">[ FECHAR ]</div>
+        </div>
+    </div>
+    <div id="voting-paper" class="modal display-none">
+        <div class="paper__container">
+            <div class="paper">
+                <div id="paper-closer" class="paper__closer">X</div>
+                <div class="paper__head">
+                    <h2>RESULTADO DA SIMULAÇÃO</h2>
+                    <p>Boletim de Urna</p>
+                    <div id="paper-voting-info"> </div>
+                </div>
+                <div id="paper-body" class="paper__body"> </div>
+            </div>
         </div>
     </div>
     <script src="./src/scripts/candidates-db.js"></script>
