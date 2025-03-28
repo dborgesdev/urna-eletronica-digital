@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Votação - Urna Eletrônica</title>
+    
+    <meta name="description" content="Simulador não oficial de votação inspirado na urna eletrônica brasileira para fins de estudos de desenvolvimento front-end, HTML, CSS e JavaScript">
+    <meta name="keywords" content="urna eletrônica, eleições">
+    <meta name="author" content="Douglas Borges Dev">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:title" content="Simulador de Votação - Urna Eletrônica">
+    <meta property="og:description" content="Simulador não oficial de votação inspirado na urna eletrônica brasileira para fins de estudos de desenvolvimento front-end, HTML, CSS e JavaScript">
+    <meta property="og:image" content="./src/assets/img/social-thumb.jpg">
+    <meta property="og:url" content="https://www.seusite.com/pagina">
+    <meta property="og:type" content="website">
+
+    <!-- CARREGAMENTO FOLHAS DE ESTILO -->
+    <link rel="stylesheet" href="./src/styles/modern-normalize.css">
+    <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+
+<body>
+    <!-- TÍTULO DA PÁGINA -->
+    <header>
+        <h1 class="header__title">Simulador de Votação<br/><span id="page-title"> </span></h1>
+    </header>
+
+    <main>
+        <!-- CORPO DA URNA ELETRÔNICA -->
+        <div class="urna">
+            <!-- Tela da urna -->
+            <div id="urna-display" class="urna__display">
+                <!-- Elementos superiores da tela -->
+                <div class="urna__display__header">
+                    <div id="header-left" class="display__header-left"> </div>
+                    <div class="display__header-center">SIMULAÇÃO</div>
+                    <div class="display__header-right"><img src="./src/assets/icon/bateria.jpg" alt="Bateria" /></div>
+                </div>
+
+                <!-- Elementos principais da tela -->
+                <div class="urna__display__main">
+                    <div id="display-main-msg" class="display__main__message display-none"> </div> 
+                    <div id="display-office" class="urna__display__office hide"> </div>
+                    
+                    <div class="display__main__row main__row--number">
+                        <div id="number-label" class="display__label hide">Número: </div>
+                        
+                        <div id="number-box" class="display__data"> </div>
+                    </div>
+                    
+                    <div id="rw2" class="display__main__row hide">
+                        <div id="rw2-alert" class="display__row__alert display-none"> </div>
+                        <div class="display__label">Nome: </div>
+                        <div id="holder-display-name" class="display__data"> </div>
+                    </div>
+                    
+                    <div id="rw3" class="display__main__row hide">
+                        <div class="display__label">Partido: </div>
+                        <div id="party-initials" class="display__data"> </div>
+                    </div>
+                    
+                    <div id="rw4" class="display__main__row hide">
+                        <div id="vice1-display-label" class="display__label">Vice: </div>
+                        <div id="vice1-name" class="display__data"> </div>
+                    </div>
+                    
+                    <div id="rw5" class="display__main__row hide">
+                        <div id="vice2-display-label" class="display__label">Suplente: </div>
+                        <div id="vice2-name" class="display__data"> </div>
+                    </div>
+                    
+                    <div id="display-alert" class="urna__display__alert blink hide"> </div>
+                </div>
+                <!-- Elementos inferiores da tela -->
+                <div id="display-footer" class="urna__display__footer display__footer--no-border hide">
+                    <div id="footer-alert" class="display__footer__alert footer__alert--center display-none"><span class="blink">CONFIRA SEU VOTO</span></div>
+                    
+                    <span id="display-footer-l1" class="display__footer__l1">Aperte a tecla:</span>
+                    <span id="display-footer-l2" class="display__footer__l2">CONFIRMA para CONFIRMAR este voto</span>
+                    <span id="display-footer-l3" class="display__footer__l3">CORRIGE para REINICIAR este voto</span>
+                </div>
+                <!-- Containers de fotos dos candidatos e vices -->
+                <div id="display-photos" class="urna__display__photos display-none">
+                    <div class="urna__display__photo-box">
+                        <img id="holder-img" class="holder__photo" src=" " alt="" />
+                        <span id="holder-photo-label" class="holder__label"> </span>
+                    </div>
+                    
+                    <div id="display-vices-photo" class="urna__display__vice-photo display-none">
+                        <div class="urna__display__photo-box">
+                            <img id="vice1-img" class="vice__photo" src=" " alt="" />
+                            <span id="vice1-photo-label" class="vice__label"> </span>
+                        </div>
+                        
+                        <div id="vice2-photo-box" class="urna__display__photo-box display-none">
+                            <img id="vice2-img" class="vice__photo" src=" " alt="" />
+                            <span id="vice2-photo-label" class="vice__label"> </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teclado da urna -->
+            <div id="urna-keyboard" class="urna__keyboard">
+                <div id="urna-keyboard-numbers" class="urna__keyboard__numbers">
+                    <div class="urna__keyboard__number-button" data-key="1">1</div>
+                    <div class="urna__keyboard__number-button" data-key="2">2</div>
+                    <div class="urna__keyboard__number-button" data-key="3">3</div>
+                    <div class="urna__keyboard__number-button" data-key="4">4</div>
+                    <div class="urna__keyboard__number-button" data-key="5">5</div>
+                    <div class="urna__keyboard__number-button" data-key="6">6</div>
+                    <div class="urna__keyboard__number-button" data-key="7">7</div>
+                    <div class="urna__keyboard__number-button" data-key="8">8</div>
+                    <div class="urna__keyboard__number-button" data-key="9">9</div>
+                    <div class="urna__keyboard__number-button number-button__zero" data-key="0">0</div>
+                </div>
+                
+                <div class="urna__keyboard__actions">
+                    <div class="urna__keyboard__blank">BRANCO</div>
+                    <div class="urna__keyboard__correct">CORRIGE</div>
+                    <div class="urna__keyboard__confirm">CONFIRMA</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- LISTA DE CANDIDATOS - COLA -->
+    <section class="candidates-list">
+        <div id="candidates-list-div" class="candidates-list__div display-none">
+            <div id="candidates-list-head" class="candidates-list__head"> </div>
+            <div id="candidates-list-body" class="candidates-list__body"> </div>
+            <div id="candidates-list-closer" class="candidates-list__closer">[ VOLTAR ]</div>
+        </div>
+    </section>
+
+    <!-- BOTÕES DE CONTROLE DA VOTAÇÃO -->
+    <section id="control-buttons" class="voting-controls display-none">
+        <div class="control__button control__button--next">PRÓXIMO ELEITOR</div>
+        <div class="control__button control__button--end">FINALIZAR VOTAÇÃO</div>
+        <div class="control__button control__button--restart">REINICIAR SIMULAÇÃO</div>
+    </section>
+
+    <!-- MODAL - ALERTAS - POP-UP -->
+    <div id="modal" class="modal">
+        <div class="modal__pop-up">
+            <div id="popup-message" class="modal__pop-up__message"> </div>
+            <div id="select-election" class="modal__select-election display-none"> </div>
+            <div id="modal-closer" class="modal__closer">[ FECHAR ]</div>
+        </div>
+    </div>
+
+    <!-- BOLETIM DE URNA -->
+    <div id="voting-paper" class="modal display-none">
+        <div class="paper__container">
+            <div class="paper">
+                <div id="paper-closer" class="paper__closer">X</div>
+                
+                <div class="paper__head">
+                    <h2>RESULTADO DA SIMULAÇÃO</h2>
+                    <p>Boletim de Urna</p>
+                    <div id="paper-voting-info"> </div>
+                </div>
+                
+                <div id="paper-body" class="paper__body"> </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer class="footer">
+        <!-- Disclaimer -->
+        <div class="footer__warning">
+            <h2>🚨 Aviso Importante</h2>
+            Este projeto é uma <strong>simulação educacional</strong> baseada no simulador oficial do TSE e não representa uma urna eletrônica real. Ele foi desenvolvido estritamente para fins de aprendizado e demonstração de habilidades técnicas, <strong>não possuindo qualquer vínculo com o sistema eleitoral brasileiro</strong>. O autor <strong>não se responsabiliza pelo uso indevido do código</strong> e reforça que este projeto <strong>não visa falsificar, comprometer ou induzir ao erro sobre o funcionamento real de urnas eletrônicas.</strong>
+        </div>
+
+        <!-- Copyright -->
+        <div class="footer__copyright">
+            Desenvolvido por Douglas Borges &copy<span id="copy-create-year">2025</span> <span id="copy-current-year"></span>
+        </div>
+    </footer>
+
+    <!-- Carregamento JavaScript -->
+    <script src="./src/scripts/candidates-db.js"></script>
+    <script src="./src/scripts/script.js"></script>
+</body>
+</html>

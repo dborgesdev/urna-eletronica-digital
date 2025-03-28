@@ -1,0 +1,894 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* ESTILOS GERAIS DA PÁGINA */
+@keyframes blink {
+    0% { opacity: 0.2; }
+    50% { opacity: 1; }
+    100% { opacity: 0.2; }
+}
+
+@keyframes charging {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+body {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    user-select: none;
+}
+
+/* ESTILOS DO CABEÇALHO */
+.header__title {
+    margin: 40px;
+    text-align: center;
+    line-height: 50px;
+}
+
+/* ESTILOS DA URNA ELETRÔNICA */
+.urna {
+    width: 990px;
+    height: 420px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    background-color: #DAD4C8;
+    border-radius: 10px;
+}
+
+/* ESTILOS DA TELA DA URNA */
+.urna__display {
+    width: 550px;
+    height: 320px;
+    position: relative;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #333;
+}
+
+/* Seção superior da tela da urna */
+.urna__display__header {
+    width: 100%;
+    height: 34px;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+}
+
+.display__header-left {
+    flex: 1;
+    font-size: 15px;
+}
+
+.display__header-center {
+    flex: 1;
+    color: #acacac;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.display__header-right {
+    flex: 1;
+    text-align: right;
+}
+
+.display__header-right img {
+    height: 20px;
+}
+
+/* Seção principal da tela da urna */
+.urna__display__main {
+    width: 100%;
+    height: 227px;
+    padding: 5px;
+    padding-bottom: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.display__main__message {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.main__message--start {
+    padding-top: 50px;
+    font-size: 22px;
+}
+
+.main__message--blank {
+    font-size: 32px;
+}
+
+.main__message--end {
+    justify-content: end;
+    font-size: 160px;
+}
+
+.main__message--saving {
+    padding: 0 10%;
+    padding-top: 10%;
+    font-weight: 600;
+    align-items: start;
+}
+
+.main__message__saving-bar {
+    width: 100%;
+    height: 15px;
+    background-color: green;
+    border: 1px solid #333;
+
+    animation-name: charging;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+
+.message__saving-bar__label {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.urna__display__office {
+    width: 400px;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    text-align: center;
+}
+
+.display__main__row {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.main__row--number {
+    height: 31px;
+}
+
+.display__label {
+    min-width: 90px;
+    font-size: 15px;
+}
+
+.display__data {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 16px;
+}
+
+.display__number__input {
+    width: 26px;
+    height: 31px;
+    display: inline-block;
+    border: 1px solid #333;
+    line-height: 31px;
+    font-size: 25px;
+    text-align: center;
+}
+
+.display__number__input--disabled {
+    background-color: #ACACAC;
+}
+
+.display__row__alert {
+    position: absolute;
+    left: 5px;
+    background-color: #fff;
+    font-size: 20px;
+    letter-spacing: 0.5px;
+}
+
+.urna__display__alert {
+    height: 40px;
+    margin-top: -10px;
+    font-size: 36px;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+/* Seção inferior da tela da urna */
+.urna__display__footer {
+    width: 100%;
+    height: 60px;
+    padding: 5px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-top: 2px solid #333;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.display__footer__alert {
+    padding-left: 25px;
+    position: absolute;
+    top: 0;
+    right: 2px;
+    bottom: 2px;
+    left: 0;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    font-size: 28px;
+}
+
+.display__footer__alert--center {
+    justify-content: center;
+}
+
+.display__footer__l1 {
+    height: 20px;
+}
+
+.display__footer__l2 {
+    height: 20px;
+    margin-left: 20px;
+}
+
+.display__footer__l3 {
+    height: 20px;
+    margin-left: 30px;
+}
+
+/* Seção lateral direita da tela da urna - fotos dos candidatos */
+.urna__display__photos {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.urna__display__photo-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.holder__photo {
+    width: 100px;
+    height: 145px;
+}
+
+.holder__label {
+    padding: 2px;
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.urna__display__vice-photo{
+    display: flex;
+    gap: 5px;
+}
+
+.vice__photo {
+    width: 75px;
+    height: 105px;
+}
+
+.vice__label {
+    padding: 2px;
+    font-size: 10px;
+}
+
+/* ESTILOS DO TECLADO DA URNA */
+.urna__keyboard {
+    width: 290px;
+    height: 320px;
+    background-color: #3F3B3A;
+}
+
+/* Teclado numérico */
+.urna__keyboard__numbers {
+    width: 100%;
+    height: 240px;
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    justify-items: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.urna__keyboard__number-button {
+    width: 55px;
+    height: 40px;
+    background-color: #373332;
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 2px -2px 3px #000;
+    font-size: 24px;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+}
+
+.number-button__zero {
+    grid-column: 2;
+}
+
+/* Teclado de ações do voto */
+.urna__keyboard__actions {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+.urna__keyboard__blank {
+    width: 75px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 2px -2px 3px #9FA09B;
+    font-size: 15px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.urna__keyboard__correct {
+    width: 75px;
+    height: 40px;
+    background-color: #F5974F;
+    border-radius: 5px;
+    box-shadow: 2px -2px 3px #9F4417;
+    font-size: 15px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.urna__keyboard__confirm {
+    width: 75px;
+    height: 35px;
+    margin-bottom: 9px;
+    background-color: #40C373;
+    border-radius: 5px;
+    box-shadow: 2px -2px 3px #20934E;
+    font-size: 13px;
+    line-height: 20px;
+    text-align: center;
+    transform: scaleY(1.5);
+    cursor: pointer;
+}
+
+/* ESTILOS DOS BOTÕES DE CONTROLE */
+.voting-controls {
+    max-width: 990px;
+    margin: auto;
+    margin-bottom: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.control__button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 5px;
+}
+
+.control__button--next {
+    background-color: #3399FF;
+}
+
+.control__button--end {
+    background-color: #20934E;
+}
+
+.control__button--restart {
+    background-color: #F5974F;
+}
+
+.control__button:hover {
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+/* ESTILOS DO MODAL / POP-UP */
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(30, 30, 30, 0.6);
+    transition: all ease .5s;
+    overflow-y: auto;
+    z-index: 99;
+}
+
+.modal--hide {
+    display: none;
+}
+
+.modal__pop-up {
+    width: 400px;
+    padding: 20px;
+    background-color: #3399FF;
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px #2b2b2b;
+}
+
+.modal__pop-up__message {
+    margin-bottom: 15px;
+    line-height: 30px;
+}
+
+.pop-up__message--title {
+    padding-bottom: 5px;
+    font-size: 22px;
+    border-bottom: 2px solid #fff;
+}
+
+.modal__closer {
+    height: 30px;
+    margin: auto;
+    display: inline-block;
+    font-weight: 600;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+.modal__select-election {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+}
+
+.modal__election__card {
+    width: 130px;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal__election__card:hover {
+    color: blue;
+    cursor: pointer;
+}
+
+.card__election__type {
+    margin-bottom: 5px;
+}
+
+.card__election__shift {
+    text-align: center;
+}
+
+/* ESTILO MODAL BOLETIM DE URNA */
+.paper__container {
+    width: 417px;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.paper {
+    width: 400px;
+    padding: 10px;
+    position: relative;
+    background-color: #fff;
+    font-family: "Space Mono", monospace;
+    font-size: 14px;
+}
+
+.paper__closer {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #ff0000;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.paper__head {
+    text-align: center;
+}
+
+.paper__body {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.paper__table {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.paper__table tr {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.paper__table__td--breakword {
+    width: 380px;
+    overflow-wrap: break-word;
+}
+
+.paper__td--center {
+    width: 100%;
+    text-align: center;
+}
+
+.paper__results__title {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.paper__results__title__txt {
+    padding: 0 2px;
+    display: inline-block;
+    position: absolute;
+    background-color: #fff;
+}
+
+.paper__results tr {
+    display: grid;
+    grid-template-columns: 230px 75px 75px;
+    text-align: right;
+}
+
+.paper__results tr th:first-of-type,
+.paper__results tr td:first-of-type {
+    text-align: left;
+}
+
+.paper__qrcode {
+    width: 300px;
+    height: 300px;
+    margin: 15px 0;
+}
+
+/* ESTILOS DA LISTA DE CANDIDATOS */
+.candidates-list {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+}
+.candidates-list__div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #3399FF;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 5px;
+}
+
+.candidates-list__head {
+    width: 100%;
+    height: 45px;
+    padding: 0 20px;
+    font-size: 22px;
+    line-height: 52px;
+    text-align: center;
+    border-bottom: 2px solid #fff;
+}
+
+.candidates-list__body {
+    width: 100%;
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.candidates-list__card {
+    width: 130px;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.list__card--link:hover {
+    color: blue;
+    cursor: pointer;
+}
+
+.card__party__title {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.card__party__description {
+    text-align: center;
+}
+
+.card__candidate__photo {
+    width: 100%;
+    max-width: 111px;
+    height: 100%;
+    max-height: 155px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.card__candidate__name {
+    text-align: center;
+}
+
+.candidates-list__closer {
+    height: 30px;
+    margin: auto;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+/* ESTILOS DO FOOTER */
+.footer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer__warning {
+    max-width: 990px;
+    margin-bottom: 20px;
+    padding: 10px;
+    text-align: center;
+    background-color: #F5974F;
+    border-radius: 20px;
+}
+
+.footer__copyright {
+    width: 100%;
+    height: 30px;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+    background-color: #333;
+    color: #fff;
+}
+
+@media (max-width: 1023px) {
+    .header__title {
+        margin: 20px;
+        line-height: 40px;
+    }
+
+    /* ESTILOS DA URNA ELETRÔNICA */
+    .urna {
+        width: 600px;
+        height: 720px;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .urna__keyboard {
+        width: 550px;
+    }
+
+    /* ESTILOS DA LISTA DE CANDIDATOS */
+        .candidates-list__head {
+        padding: 0 15px;
+        font-size: 20px;
+    }
+
+    .candidates-list__card {
+        width: 120px;
+    }
+
+    /*ESTILOS BOTÕES DE CONTROLE */
+    .voting-controls {
+        max-width: 600px;
+    }
+
+    .control__button {
+        padding: 10px 5px;
+        font-size: 18px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 650px) {
+    .header__title {
+        font-size: 28px;
+    }
+
+    /* ESTILOS DA URNA ELETRÔNICA */
+    .urna {
+        width: 400px;
+    }
+
+    .urna__keyboard {
+        width: 360px;
+    }
+
+    /* ESTILOS DA TELA DA URNA */
+    .urna__display {
+        width: 360px;
+    }
+
+    /* Seção superior da tela da urna */
+    .display__header-left {
+        font-size: 14px;
+        line-height: 14px;
+    }
+
+    .display__header-center {
+        font-size: 16px;
+    }
+
+    /* Seção principal da tela da urna */
+    .main__message--start {
+        font-size: 20px;
+    }
+
+    .main__message--blank {
+        font-size: 28px;
+    }
+
+    .main__message--end {
+        font-size: 120px;
+    }
+
+    .main__message__saving-bar {
+        height: 12px;
+    }
+
+    .urna__display__office {
+        margin-left: 20px;
+        text-align: left;
+    }
+
+    .display__label {
+        font-size: 14px;
+    }
+
+    .display__data {
+        font-size: 15px;
+    }
+
+    .display__row__alert {
+        font-size: 18px;
+    }
+
+    .urna__display__alert {
+        height: 34px;
+        font-size: 28px;
+    }
+
+    /* Seção inferior da tela da urna */
+    .urna__display__footer {
+        font-size: 12px;
+        letter-spacing: 0.3px;
+    }
+
+    .display__footer__alert {
+        padding-left: 15px;
+        font-size: 24px;
+    }
+
+    /* Seção lateral direita da tela da urna - fotos dos candidatos */
+    .holder__photo {
+        width: 90px;
+        height: 130px;
+    }
+
+    .holder__label {
+        font-size: 13px;
+    }
+
+    .vice__photo {
+        width: 70px;
+        height: 100px;
+    }
+
+    /* ESTILOS DA LISTA DE CANDIDATOS */
+    .candidates-list__head {
+        height: auto;
+        padding: 0 10px;
+        line-height: 30px;
+    }
+
+    .candidates-list__body {
+        margin: 0 10px;
+        flex-wrap: wrap;
+    }
+
+    .candidates-list__card {
+        width: 120px;
+    }
+
+    /*ESTILOS BOTÕES DE CONTROLE */
+    .voting-controls {
+        max-width: 400px;
+        margin-top: -30px;
+        margin-bottom: 25px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .control__button {
+        width: 250px;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+    }
+}
+
+/* MODIFICADORES DE CLASSES PARA O JS */
+.display-none {
+    display: none;
+}
+
+.hide {
+    color: transparent;
+}
+
+.footer__l3--status {
+    margin-left: 0;
+    background-color: #DBE2EF;
+    color: #333;
+    text-align: center;
+    line-height: 20px;
+}
+
+.display__footer--no-border {
+    padding: 0;
+    border: 0;
+}
+
+.footer__alert--center {
+    padding: 0;
+    justify-content: center;
+}
+
+.number__input--disabled {
+    background-color: #ACACAC;
+}
+
+.blink {
+    animation-name: blink;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+.no-scroll {
+    overflow: hidden;
+    height: 100vh;
+}
